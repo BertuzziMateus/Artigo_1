@@ -58,9 +58,9 @@ print(f"PERMX: {len(permx)} valores extraídos")
 print(f"PERMY: {len(permy)} valores extraídos")
 print(f"PERMZ: {len(permz)} valores extraídos")
 
-print(permx[:500])
-print(permy[:500])
-print(permz[:500])
+# print(permx[:500])
+# print(permy[:500])
+# print(permz[:500])
 
 pontos = np.column_stack((np.array(permx), np.array(permy), np.array(permz)))
 
@@ -152,3 +152,36 @@ print(f"Número de valores extraídos: {len(zcorn_dados)}")
 
 
 # print(zcorn_dados)
+
+
+
+import numpy as np
+import pyvista as pv
+# Exemplo: dimensões do SPECGRID
+NX, NY, NZ = 81, 58, 20  # ajuste para seu modelo
+
+# Converter PERMX em 3D
+permx_array = np.array(permx).reshape((NZ, NY, NX), order="C")
+
+# Criar coordenadas do grid regular
+x = np.arange(NX+1, dtype=np.float32)
+y = np.arange(NY+1, dtype=np.float32)
+z = np.arange(NZ+1, dtype=np.float32)
+xx, yy, zz = np.meshgrid(x, y, z, indexing="ij")
+
+# Criar grid estruturado
+grid = pv.StructuredGrid(xx, yy, zz)
+
+# Achatar valores no formato que o PyVista espera
+permx_flat = permx_array.flatten(order="F")
+
+# Máscara para remover valores iguais a 1
+permx_masked = np.where(permx_flat != 1, permx_flat, np.nan)
+
+# Adicionar como dado de célula
+grid.cell_data["PERMX"] = permx_masked
+
+# Plotar
+p = pv.Plotter()
+p.add_mesh(grid, scalars="PERMX", cmap="viridis", clim=[0, np.nanmax(permx_masked)])
+p.show()
