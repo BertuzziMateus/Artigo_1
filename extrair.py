@@ -57,7 +57,9 @@ print(f"PERMX: {len(permx)} valores extraídos")
 print(f"PERMY: {len(permy)} valores extraídos")
 print(f"PERMZ: {len(permz)} valores extraídos")
 
-
+print(permx[:1000])
+print(permy[:1000])
+print(permz[:1000])
 
 pontos = np.column_stack((np.array(permx), np.array(permy), np.array(permz)))
 
@@ -101,8 +103,17 @@ def extrair_coord_numpy(arquivo):
 arquivo_data = "UNISIM_I_D_ECLIPSE.data"
 coords_array = extrair_coord_numpy(arquivo_data)
 
-# Salvando para uso posterior
-np.save("coordenadas.npy", coords_array)
+
+x = coords_array[:, 0]
+y = coords_array[:, 1]
+
+X,Y = np.meshgrid(x, y)
+
+
+print(len(X))
+print(len(Y))
+
+
 
 # Plotando exemplo 3D
 import matplotlib.pyplot as plt
@@ -110,7 +121,7 @@ from mpl_toolkits.mplot3d import Axes3D
 
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
-ax.scatter(coords_array[:, 0], coords_array[:, 1], coords_array[:, 2], s=10)
+ax.scatter(coords_array[:, 0], coords_array[:, 1], coords_array[:, 2],)
 ax.set_xlabel("X")
 ax.set_ylabel("Y")
 ax.set_zlabel("Z")
@@ -149,4 +160,3 @@ print(f"Número de valores extraídos: {len(zcorn_dados)}")
 
 
 #print(zcorn_dados)
-
