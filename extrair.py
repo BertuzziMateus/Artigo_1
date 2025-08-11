@@ -116,7 +116,7 @@ print(len(Y))
 
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
-ax.scatter(coords_array[:, 0], coords_array[:, 1], coords_array[:, 2],)
+ax.scatter(coords_array[:, 0], coords_array[:, 1], coords_array[:, 2],s=1)
 ax.set_xlabel("X")
 ax.set_ylabel("Y")
 ax.set_zlabel("Z")
