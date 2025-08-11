@@ -29,9 +29,9 @@ salvamento = 100  # segundos (tempo de salvamento)
 ################################################################################
 
 ############################ Discretização #####################################
-Nx = 100
-Ny = 100
-dt = 1000  # segunods
+Nx = 1000
+Ny = 1000
+dt = 1000  # segundos
 t_max = 10*3600  # segundos
 dx = Lx/Nx
 dy = Ly/Ny

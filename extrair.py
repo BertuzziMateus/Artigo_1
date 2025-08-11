@@ -119,3 +119,34 @@ plt.show()
 
 
 
+
+
+def extrair_zcorn(caminho_arquivo):
+    with open(caminho_arquivo, 'r') as arquivo:
+        dentro_zcorn = False
+        dados_zcorn = []
+
+        for linha in arquivo:
+            if 'ZCORN' in linha:
+                dentro_zcorn = True
+                continue
+
+            if dentro_zcorn:
+                if '/' in linha:
+                    # Remove a barra e adiciona os últimos valores
+                    linha = linha.replace('/', '')
+                    dados_zcorn.extend(map(float, linha.split()))
+                    break  # fim do bloco ZCORN
+                else:
+                    dados_zcorn.extend(map(float, linha.split()))
+
+    return dados_zcorn
+
+# Exemplo de uso
+caminho = 'UNISIM_I_D_ECLIPSE.data'
+zcorn_dados = extrair_zcorn(caminho)
+print(f"Número de valores extraídos: {len(zcorn_dados)}")
+
+
+#print(zcorn_dados)
+
