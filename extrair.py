@@ -62,12 +62,47 @@ print(f"PERMZ: {len(permz)} valores extraídos")
 pontos = np.column_stack((np.array(permx), np.array(permy), np.array(permz)))
 
 
-# fig = plt.figure(figsize=(10, 8))
 
-# ax = fig.add_subplot(111, projection='3d')
-# ax.plot_surface(permx, permy, permz, cmap='viridis')
+import re
 
-# plt.show()
+def extrair_coord(arquivo):
+    """
+    Lê um arquivo .data e retorna uma lista com as coordenadas (X, Y, Z)
+    encontradas na seção COORD.
+    """
+    coords = []
+    lendo_coord = False
+    
+    with open(arquivo, 'r', encoding='utf-8') as f:
+        for linha in f:
+            linha = linha.strip()
+            
+            # Detecta início da seção COORD
+            if linha.startswith("COORD"):
+                lendo_coord = True
+                continue
+            
+            # Detecta fim da seção
+            if lendo_coord and linha.startswith("/"):
+                break
+            
+            if lendo_coord:
+                # Remove comentários '--' e transforma a linha em números
+                linha_limpa = linha.split('--')[0]
+                numeros = re.findall(r"[-+]?\d*\.\d+|\d+", linha_limpa)
+                coords.extend(map(float, numeros))
+    
+    # Agrupa de 3 em 3 para formar (X, Y, Z)
+    coordenadas_agrupadas = [tuple(coords[i:i+3]) for i in range(0, len(coords), 3)]
+    return coordenadas_agrupadas
+
+# Exemplo de uso
+arquivo_data = "UNISIM_I_D_ECLIPSE.data"
+resultado = extrair_coord(arquivo_data)
+for i, (x, y, z) in enumerate(resultado, start=1):
+    print(f"Bloco {i}: X={x}, Y={y}, Z={z}")
+
+
 
 
 
