@@ -64,11 +64,12 @@ pontos = np.column_stack((np.array(permx), np.array(permy), np.array(permz)))
 
 
 import re
+import numpy as np
 
-def extrair_coord(arquivo):
+def extrair_coord_numpy(arquivo):
     """
-    Lê um arquivo .data e retorna uma lista com as coordenadas (X, Y, Z)
-    encontradas na seção COORD.
+    Lê um arquivo .data e retorna um NumPy array (N x 3) com as coordenadas X, Y, Z
+    da seção COORD.
     """
     coords = []
     lendo_coord = False
@@ -77,32 +78,43 @@ def extrair_coord(arquivo):
         for linha in f:
             linha = linha.strip()
             
-            # Detecta início da seção COORD
+            # Início da seção COORD
             if linha.startswith("COORD"):
                 lendo_coord = True
                 continue
             
-            # Detecta fim da seção
+            # Fim da seção
             if lendo_coord and linha.startswith("/"):
                 break
             
             if lendo_coord:
-                # Remove comentários '--' e transforma a linha em números
+                # Remove comentários '--'
                 linha_limpa = linha.split('--')[0]
+                # Extrai números (float ou int)
                 numeros = re.findall(r"[-+]?\d*\.\d+|\d+", linha_limpa)
                 coords.extend(map(float, numeros))
     
-    # Agrupa de 3 em 3 para formar (X, Y, Z)
-    coordenadas_agrupadas = [tuple(coords[i:i+3]) for i in range(0, len(coords), 3)]
-    return coordenadas_agrupadas
+    # Converte para NumPy e reestrutura em colunas X, Y, Z
+    return np.array(coords).reshape(-1, 3)
 
 # Exemplo de uso
 arquivo_data = "UNISIM_I_D_ECLIPSE.data"
-resultado = extrair_coord(arquivo_data)
-for i, (x, y, z) in enumerate(resultado, start=1):
-    print(f"Bloco {i}: X={x}, Y={y}, Z={z}")
+coords_array = extrair_coord_numpy(arquivo_data)
 
+# Salvando para uso posterior
+np.save("coordenadas.npy", coords_array)
 
+# Plotando exemplo 3D
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+ax.scatter(coords_array[:, 0], coords_array[:, 1], coords_array[:, 2], s=10)
+ax.set_xlabel("X")
+ax.set_ylabel("Y")
+ax.set_zlabel("Z")
+plt.show()
 
 
 
