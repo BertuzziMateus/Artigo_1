@@ -37,7 +37,7 @@ def extrair_keyword(linhas, keyword):
     return valores
 
 # Caminho do arquivo
-file_path = "PETRO_0[1].INC"  # ajuste para o seu
+file_path = "PETRO_0.INC"  # ajuste para o seu
 
 # Ler todas as linhas
 with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
@@ -52,18 +52,3 @@ print(f"PERMX: {len(permx)} valores extraídos")
 print(f"PERMY: {len(permy)} valores extraídos")
 print(f"PERMZ: {len(permz)} valores extraídos")
 
-#print("PERMX primeiros:", permx)
-
-fig = plt.figure(figsize=(8,6))
-ax = fig.add_subplot(111, projection='3d')
-
-# Magnitude total da permeabilidade (opcional, para colorir)
-#magnitude = np.sqrt(permx**2 + permy**2 + permz**2)
-
-p = ax.scatter(permx, permy, permz, cmap='viridis', s=2)
-fig.colorbar(p, label='Magnitude da Permeabilidade (mD)')
-
-ax.set_xlabel('PermX')
-ax.set_ylabel('PermY')
-ax.set_zlabel('PermZ')
-plt.show()
