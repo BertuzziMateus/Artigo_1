@@ -56,3 +56,19 @@ permz = extrair_keyword(linhas, "PERMZ")
 print(f"PERMX: {len(permx)} valores extraídos")
 print(f"PERMY: {len(permy)} valores extraídos")
 print(f"PERMZ: {len(permz)} valores extraídos")
+
+
+
+pontos = np.column_stack((np.array(permx), np.array(permy), np.array(permz)))
+
+
+# fig = plt.figure(figsize=(10, 8))
+
+# ax = fig.add_subplot(111, projection='3d')
+# ax.plot_surface(permx, permy, permz, cmap='viridis')
+
+# plt.show()
+
+
+
+
