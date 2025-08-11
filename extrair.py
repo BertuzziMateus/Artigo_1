@@ -1,3 +1,4 @@
+from mpl_toolkits.mplot3d import Axes3D
 import re
 import matplotlib.pyplot as plt
 import numpy as np
@@ -57,16 +58,12 @@ print(f"PERMX: {len(permx)} valores extraídos")
 print(f"PERMY: {len(permy)} valores extraídos")
 print(f"PERMZ: {len(permz)} valores extraídos")
 
-print(permx[:1000])
-print(permy[:1000])
-print(permz[:1000])
+print(permx[:500])
+print(permy[:500])
+print(permz[:500])
 
 pontos = np.column_stack((np.array(permx), np.array(permy), np.array(permz)))
 
-
-
-import re
-import numpy as np
 
 def extrair_coord_numpy(arquivo):
     """
@@ -75,29 +72,30 @@ def extrair_coord_numpy(arquivo):
     """
     coords = []
     lendo_coord = False
-    
+
     with open(arquivo, 'r', encoding='utf-8') as f:
         for linha in f:
             linha = linha.strip()
-            
+
             # Início da seção COORD
             if linha.startswith("COORD"):
                 lendo_coord = True
                 continue
-            
+
             # Fim da seção
             if lendo_coord and linha.startswith("/"):
                 break
-            
+
             if lendo_coord:
                 # Remove comentários '--'
                 linha_limpa = linha.split('--')[0]
                 # Extrai números (float ou int)
                 numeros = re.findall(r"[-+]?\d*\.\d+|\d+", linha_limpa)
                 coords.extend(map(float, numeros))
-    
+
     # Converte para NumPy e reestrutura em colunas X, Y, Z
     return np.array(coords).reshape(-1, 3)
+
 
 # Exemplo de uso
 arquivo_data = "UNISIM_I_D_ECLIPSE.data"
@@ -107,17 +105,14 @@ coords_array = extrair_coord_numpy(arquivo_data)
 x = coords_array[:, 0]
 y = coords_array[:, 1]
 
-X,Y = np.meshgrid(x, y)
+X, Y = np.meshgrid(x, y)
 
 
 print(len(X))
 print(len(Y))
 
 
-
 # Plotando exemplo 3D
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
@@ -126,10 +121,6 @@ ax.set_xlabel("X")
 ax.set_ylabel("Y")
 ax.set_zlabel("Z")
 plt.show()
-
-
-
-
 
 
 def extrair_zcorn(caminho_arquivo):
@@ -153,10 +144,11 @@ def extrair_zcorn(caminho_arquivo):
 
     return dados_zcorn
 
+
 # Exemplo de uso
 caminho = 'UNISIM_I_D_ECLIPSE.data'
 zcorn_dados = extrair_zcorn(caminho)
 print(f"Número de valores extraídos: {len(zcorn_dados)}")
 
 
-#print(zcorn_dados)
+# print(zcorn_dados)
