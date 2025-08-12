@@ -2,6 +2,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import re
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.colors import LinearSegmentedColormap
 
 # Função para expandir formato tipo "53*0.00" em lista de floats
 
@@ -278,35 +279,87 @@ permX_flat = permX_3d.flatten(order='F')[ativos]
 permY_flat = permY_3d.flatten(order='F')[ativos]
 permZ_flat = permZ_3d.flatten(order='F')[ativos]
 
-# --- Plot com 3 subplots ---
-fig = plt.figure(figsize=(15, 5))
+# # --- Plot com 3 subplots ---
+# fig = plt.figure(figsize=(15, 5))
 
 # PermX
-ax1 = fig.add_subplot(131, projection='3d')
-sc1 = ax1.scatter(Xf, Yf, Zf, c=permX_flat, cmap='viridis', s=5)
-ax1.set_title("PermX")
-ax1.set_xlabel("X")
-ax1.set_ylabel("Y")
-ax1.set_zlabel("Z")
-fig.colorbar(sc1, ax=ax1, shrink=0.5, label="mD")
+# ax1 = fig.add_subplot(131, projection='3d')
+# sc1 = ax1.scatter(Xf, Yf, Zf[:-1], c=permX_flat, cmap='viridis', s=5)
+# ax1.set_title("PermX")
+# ax1.set_xlabel("X")
+# ax1.set_ylabel("Y")
+# ax1.set_zlabel("Z")
+# fig.colorbar(sc1, ax=ax1, shrink=0.5, label="mD")
 
-# PermY
-ax2 = fig.add_subplot(132, projection='3d')
-sc2 = ax2.scatter(Xf, Yf, Zf, c=permY_flat, cmap='viridis', s=5)
-ax2.set_title("PermY")
-ax2.set_xlabel("X")
-ax2.set_ylabel("Y")
-ax2.set_zlabel("Z")
-fig.colorbar(sc2, ax=ax2, shrink=0.5, label="mD")
+# # PermY
+# ax2 = fig.add_subplot(132, projection='3d')
+# sc2 = ax2.scatter(Xf, Yf, Zf, c=permY_flat, cmap='viridis', s=5)
+# ax2.set_title("PermY")
+# ax2.set_xlabel("X")
+# ax2.set_ylabel("Y")
+# ax2.set_zlabel("Z")
+# fig.colorbar(sc2, ax=ax2, shrink=0.5, label="mD")
 
-# PermZ
-ax3 = fig.add_subplot(133, projection='3d')
-sc3 = ax3.scatter(Xf, Yf, Zf, c=permZ_flat, cmap='viridis', s=5)
-ax3.set_title("PermZ")
-ax3.set_xlabel("X")
-ax3.set_ylabel("Y")
-ax3.set_zlabel("Z")
-fig.colorbar(sc3, ax=ax3, shrink=0.5, label="mD")
+# # PermZ
+# ax3 = fig.add_subplot(133, projection='3d')
+# sc3 = ax3.scatter(Xf, Yf, Zf, c=permZ_flat, cmap='viridis', s=5)
+# ax3.set_title("PermZ")
+# ax3.set_xlabel("X")
+# ax3.set_ylabel("Y")
+# ax3.set_zlabel("Z")
+# fig.colorbar(sc3, ax=ax3, shrink=0.5, label="mD")
 
-plt.tight_layout()
+# plt.tight_layout()
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Remodelar arrays para 3D (se ainda não fez)
+actnum_3d = array_actnum.reshape((NX, NY, NZ), order='F')
+permX_3d = np.array(permx).reshape((NX, NY, NZ), order='F')
+
+# Índice da última camada (em Z)
+k_ultimo = NZ - 1
+
+# Coordenadas (você já tem min/max)
+x_vet = np.linspace(min_x, max_x, NX)
+y_vet = np.linspace(min_y, max_y, NY)
+
+# Criar grid 2D para a camada (X, Y)
+X2d, Y2d = np.meshgrid(x_vet, y_vet, indexing='ij')
+
+# Flatten para filtro
+Xf = X2d.flatten(order='F')
+Yf = Y2d.flatten(order='F')
+
+# Extrair permeabilidade e actnum da última camada
+permX_last = permX_3d[:, :, k_ultimo].flatten(order='F')
+actnum_last = actnum_3d[:, :, k_ultimo].flatten(order='F')
+
+# Filtrar só ativos
+mask_ativos = actnum_last == 1
+Xf_ativos = Xf[mask_ativos]
+Yf_ativos = Yf[mask_ativos]
+permX_ativos = permX_last[mask_ativos]
+
+cores = [
+    "#ff00b3",  # roxo/violeta
+    "#0000ff",  # azul
+    "#00ffff",  # ciano
+    "#00ff00",  # verde
+    "#ffff00",  # amarelo
+    "#ff0000",  # vermelho
+]
+
+cmap_custom = LinearSegmentedColormap.from_list("CustomMap", cores)
+
+
+# Plot
+plt.figure(figsize=(8,6))
+sc = plt.scatter(Xf_ativos, Yf_ativos, c=permX_ativos, cmap=cmap_custom, s=20)
+plt.colorbar(sc, label='PermX (mD)')
+plt.xlabel('X')
+plt.ylabel('Y')
+plt.title(f'PermX da última camada (k={k_ultimo}) - Blocos ativos')
+plt.gca().set_aspect('equal')
 plt.show()
