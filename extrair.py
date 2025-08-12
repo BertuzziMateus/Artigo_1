@@ -5,7 +5,6 @@ import numpy as np
 from matplotlib.colors import LinearSegmentedColormap
 import time
 
-# Função para expandir formato tipo "53*0.00" em lista de floats
 
 
 def expand_numbers_safe(text):
@@ -60,9 +59,6 @@ print(f"PERMX: {len(permx)} valores extraídos")
 print(f"PERMY: {len(permy)} valores extraídos")
 print(f"PERMZ: {len(permz)} valores extraídos")
 
-# print(permx[:500])
-# print(permy[:500])
-# print(permz[:500])
 
 pontos = np.column_stack((np.array(permx), np.array(permy), np.array(permz)))
 
@@ -93,19 +89,6 @@ arquivo_data = "UNISIM_I_D_ECLIPSE.data"
 coords_array = extrair_coord_numpy(arquivo_data)
 
 
-#print(coords_array)
-
-
-# # Plotando exemplo 3D
-
-# fig = plt.figure()
-# ax = fig.add_subplot(111, projection='3d')
-# ax.scatter(coords_array[:, 0], coords_array[:, 1], coords_array[:, 2],s=1)
-# ax.set_xlabel("X")
-# ax.set_ylabel("Y")
-# ax.set_zlabel("Z")
-# plt.show()
-# plt.close()
 
 def extrair_zcorn(caminho_arquivo):
     with open(caminho_arquivo, 'r') as arquivo:
@@ -119,7 +102,7 @@ def extrair_zcorn(caminho_arquivo):
 
             if dentro_zcorn:
                 if '/' in linha:
-                    # Remove a barra e adiciona os últimos valores
+
                     linha = linha.replace('/', '')
                     dados_zcorn.extend(map(float, linha.split()))
                     break  # fim do bloco ZCORN
@@ -132,7 +115,6 @@ def extrair_zcorn(caminho_arquivo):
 # Exemplo de uso
 caminho = 'UNISIM_I_D_ECLIPSE.data'
 zcorn_dados = extrair_zcorn(caminho)
-#print(f"Número de valores extraídos: {len(zcorn_dados)}")
 
 
 NX, NY, NZ = 81, 58, 20  # ajuste para seu modelo
@@ -168,11 +150,6 @@ def ler_actnum_arquivo(caminho_arquivo):
 
 # Exemplo de uso
 array_actnum = ler_actnum_arquivo("UNISIM_I_D_ECLIPSE.data")
-
-#print(len(array_actnum), "valores de ACTNUM extraídos")
-
-
-#print(array_actnum)
 
 
 for i in range(NX):
@@ -250,7 +227,6 @@ for i in range(NX):
 
             else:
                 status = "Inativo"
-                # Verifica se alguma permeabilidade é diferente de 1
                 if (permX_3d[i, j, k] != 1 or
                     permY_3d[i, j, k] != 1 or
                         permZ_3d[i, j, k] != 1):
@@ -331,19 +307,19 @@ Yf = Y2d.flatten(order='F')
 cores = ["#ff00b3", "#0000ff", "#00ffff", "#00ff00", "#ffff00", "#ff0000"]
 cmap_custom = LinearSegmentedColormap.from_list("CustomMap", cores)
 
-# Loop em todas as camadas
+
 for k in range(NZ):
-    # Extrair camada k
+  
     permX_k = permX_3d[:, :, k].flatten(order='F')
     actnum_k = actnum_3d[:, :, k].flatten(order='F')
 
-    # Filtrar blocos ativos
+ 
     mask_ativos = actnum_k == 1
     Xf_ativos = Xf[mask_ativos]
     Yf_ativos = Yf[mask_ativos]
     permX_ativos = permX_k[mask_ativos]
 
-    # Plot
+
     plt.figure(figsize=(8, 6))
     sc = plt.scatter(Xf_ativos, Yf_ativos, c=permX_ativos, cmap=cmap_custom, s=20)
     plt.colorbar(sc, label='PermX (mD)')
