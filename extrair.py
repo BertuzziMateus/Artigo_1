@@ -334,11 +334,43 @@ permZ_flat = permZ_3d.flatten(order='F')[ativos]
 # print(a)
 
 
+
+
+mapa_copia = np.copy(permX_3d)
+
+
+
+
 # Agora cada célula (i, j, k) tem seu valor
 for i in range(NX):
     for j in range(NY):
+        b = [[],[],[]]
         for k in range(NZ):
+            cont_z = 0
             if actnum_3d[i, j, k] == 1:
-                print(k)
-                time.sleep(10)
-                print(permX_3d[i, j, k])
+                print(i, j, k)
+
+                b[0].append(permX_3d[i, j, k])
+                b[1].append(permY_3d[i, j, k])
+                b[2].append(permZ_3d[i, j, k])
+                print(b)
+                time.sleep(0.1)
+
+
+
+            
+
+            else:
+                print('Inativo')
+        print(b)
+        time.sleep(0.1)
+        b_x_med = np.mean(b[0])
+
+
+
+
+
+
+    
+                
+
