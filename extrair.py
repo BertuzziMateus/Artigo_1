@@ -3,6 +3,7 @@ import re
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.colors import LinearSegmentedColormap
+import time
 
 # Função para expandir formato tipo "53*0.00" em lista de floats
 
@@ -92,7 +93,7 @@ arquivo_data = "UNISIM_I_D_ECLIPSE.data"
 coords_array = extrair_coord_numpy(arquivo_data)
 
 
-print(coords_array)
+#print(coords_array)
 
 
 # # Plotando exemplo 3D
@@ -131,7 +132,7 @@ def extrair_zcorn(caminho_arquivo):
 # Exemplo de uso
 caminho = 'UNISIM_I_D_ECLIPSE.data'
 zcorn_dados = extrair_zcorn(caminho)
-print(f"Número de valores extraídos: {len(zcorn_dados)}")
+#print(f"Número de valores extraídos: {len(zcorn_dados)}")
 
 
 NX, NY, NZ = 81, 58, 20  # ajuste para seu modelo
@@ -168,10 +169,10 @@ def ler_actnum_arquivo(caminho_arquivo):
 # Exemplo de uso
 array_actnum = ler_actnum_arquivo("UNISIM_I_D_ECLIPSE.data")
 
-print(len(array_actnum), "valores de ACTNUM extraídos")
+#print(len(array_actnum), "valores de ACTNUM extraídos")
 
 
-print(array_actnum)
+#print(array_actnum)
 
 
 for i in range(NX):
@@ -234,6 +235,7 @@ permX_3d = np.array(permx).reshape((NX, NY, NZ), order='F')
 permY_3d = np.array(permy).reshape((NX, NY, NZ), order='F')
 permZ_3d = np.array(permz).reshape((NX, NY, NZ), order='F')
 
+
 # Agora cada célula (i, j, k) tem seu valor
 for i in range(NX):
     for j in range(NY):
@@ -244,6 +246,7 @@ for i in range(NX):
                       f"PermX={permX_3d[i, j, k]:.2f} | "
                       f"PermY={permY_3d[i, j, k]:.2f} | "
                       f"PermZ={permZ_3d[i, j, k]:.2f}")
+                    
 
             else:
                 status = "Inativo"
@@ -255,6 +258,8 @@ for i in range(NX):
                         f"Célula ({i}, {j}, {k}) inativa com permeabilidade ≠ 1: "
                         f"PermX={permX_3d[i, j, k]}, PermY={permY_3d[i, j, k]}, PermZ={permZ_3d[i, j, k]}"
                     )
+
+
 
 
 # --- Remodelar para 3D ---
@@ -311,55 +316,42 @@ permZ_flat = permZ_3d.flatten(order='F')[ativos]
 
 # plt.tight_layout()
 
-import numpy as np
-import matplotlib.pyplot as plt
-
-# Remodelar arrays para 3D (se ainda não fez)
+# Remodelar arrays para 3D
 actnum_3d = array_actnum.reshape((NX, NY, NZ), order='F')
 permX_3d = np.array(permx).reshape((NX, NY, NZ), order='F')
 
-# Índice da última camada (em Z)
-k_ultimo = NZ - 1
-
-# Coordenadas (você já tem min/max)
+# Coordenadas
 x_vet = np.linspace(min_x, max_x, NX)
 y_vet = np.linspace(min_y, max_y, NY)
-
-# Criar grid 2D para a camada (X, Y)
 X2d, Y2d = np.meshgrid(x_vet, y_vet, indexing='ij')
-
-# Flatten para filtro
 Xf = X2d.flatten(order='F')
 Yf = Y2d.flatten(order='F')
 
-# Extrair permeabilidade e actnum da última camada
-permX_last = permX_3d[:, :, k_ultimo].flatten(order='F')
-actnum_last = actnum_3d[:, :, k_ultimo].flatten(order='F')
-
-# Filtrar só ativos
-mask_ativos = actnum_last == 1
-Xf_ativos = Xf[mask_ativos]
-Yf_ativos = Yf[mask_ativos]
-permX_ativos = permX_last[mask_ativos]
-
-cores = [
-    "#ff00b3",  # roxo/violeta
-    "#0000ff",  # azul
-    "#00ffff",  # ciano
-    "#00ff00",  # verde
-    "#ffff00",  # amarelo
-    "#ff0000",  # vermelho
-]
-
+# Colormap customizado
+cores = ["#ff00b3", "#0000ff", "#00ffff", "#00ff00", "#ffff00", "#ff0000"]
 cmap_custom = LinearSegmentedColormap.from_list("CustomMap", cores)
 
+# Loop em todas as camadas
+for k in range(NZ):
+    # Extrair camada k
+    permX_k = permX_3d[:, :, k].flatten(order='F')
+    actnum_k = actnum_3d[:, :, k].flatten(order='F')
 
-# Plot
-plt.figure(figsize=(8,6))
-sc = plt.scatter(Xf_ativos, Yf_ativos, c=permX_ativos, cmap=cmap_custom, s=20)
-plt.colorbar(sc, label='PermX (mD)')
-plt.xlabel('X')
-plt.ylabel('Y')
-plt.title(f'PermX da última camada (k={k_ultimo}) - Blocos ativos')
-plt.gca().set_aspect('equal')
-plt.show()
+    # Filtrar blocos ativos
+    mask_ativos = actnum_k == 1
+    Xf_ativos = Xf[mask_ativos]
+    Yf_ativos = Yf[mask_ativos]
+    permX_ativos = permX_k[mask_ativos]
+
+    # Plot
+    plt.figure(figsize=(8, 6))
+    sc = plt.scatter(Xf_ativos, Yf_ativos, c=permX_ativos, cmap=cmap_custom, s=20)
+    plt.colorbar(sc, label='PermX (mD)')
+    plt.xlabel('X')
+    plt.ylabel('Y')
+    plt.xlim(min_x-1000, max_x+1000)
+    plt.ylim(min_y-1000, max_y+1000)
+    plt.title(f'PermX camada k={k} - Blocos ativos')
+    plt.gca().set_aspect('equal')
+    plt.grid(alpha=0.2)
+    plt.show()
