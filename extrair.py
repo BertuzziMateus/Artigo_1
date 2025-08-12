@@ -160,28 +160,62 @@ import pyvista as pv
 # Exemplo: dimensões do SPECGRID
 NX, NY, NZ = 81, 58, 20  # ajuste para seu modelo
 
-# Converter PERMX em 3D
-permx_array = np.array(permx).reshape((NZ, NY, NX), order="C")
+# # Converter PERMX em 3D
+# permx_array = np.array(permx).reshape((NZ, NY, NX), order="C")
 
-# Criar coordenadas do grid regular
-x = np.arange(NX+1, dtype=np.float32)
-y = np.arange(NY+1, dtype=np.float32)
-z = np.arange(NZ+1, dtype=np.float32)
-xx, yy, zz = np.meshgrid(x, y, z, indexing="ij")
+# # Criar coordenadas do grid regular
+# x = np.arange(NX+1, dtype=np.float32)
+# y = np.arange(NY+1, dtype=np.float32)
+# z = np.arange(NZ+1, dtype=np.float32)
+# xx, yy, zz = np.meshgrid(x, y, z, indexing="ij")
 
-# Criar grid estruturado
-grid = pv.StructuredGrid(xx, yy, zz)
+# # Criar grid estruturado
+# grid = pv.StructuredGrid(xx, yy, zz)
 
-# Achatar valores no formato que o PyVista espera
-permx_flat = permx_array.flatten(order="F")
+# # Achatar valores no formato que o PyVista espera
+# permx_flat = permx_array.flatten(order="F")
 
-# Máscara para remover valores iguais a 1
-permx_masked = np.where(permx_flat != 1, permx_flat, np.nan)
+# # Máscara para remover valores iguais a 1
+# permx_masked = np.where(permx_flat != 1, permx_flat, np.nan)
 
-# Adicionar como dado de célula
-grid.cell_data["PERMX"] = permx_masked
+# # Adicionar como dado de célula
+# grid.cell_data["PERMX"] = permx_masked
 
-# Plotar
-p = pv.Plotter()
-p.add_mesh(grid, scalars="PERMX", cmap="viridis", clim=[0, np.nanmax(permx_masked)])
-p.show()
+# # Plotar
+# p = pv.Plotter()
+# p.add_mesh(grid, scalars="PERMX", cmap="viridis", clim=[0, np.nanmax(permx_masked)])
+# p.show()
+
+
+import numpy as np
+
+def ler_actnum_arquivo(caminho_arquivo):
+    valores_str = []
+    coletando = False
+    
+    with open(caminho_arquivo, 'r') as f:
+        for linha in f:
+            linha = linha.strip()
+            
+            if not coletando:
+                if linha.upper() == "ACTNUM":
+                    coletando = True
+                continue
+            
+            # Quando estiver coletando, para se achar a linha que termina com '/'
+            valores_str.append(linha)
+            if linha.endswith('/'):
+                break
+    
+    # Junta tudo e remove barras
+    texto_valores = " ".join(valores_str).replace('/', ' ')
+    
+    # Separa tokens e converte para int (0 ou 1)
+    tokens = texto_valores.split()
+    valores = [int(t) for t in tokens if t in ('0', '1')]
+    
+    return np.array(valores)
+
+# Exemplo de uso
+array_actnum = ler_actnum_arquivo("UNISIM_I_D_ECLIPSE.data")
+print(array_actnum)
