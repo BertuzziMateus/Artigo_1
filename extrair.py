@@ -66,34 +66,23 @@ pontos = np.column_stack((np.array(permx), np.array(permy), np.array(permz)))
 
 
 def extrair_coord_numpy(arquivo):
-    """
-    Lê um arquivo .data e retorna um NumPy array (N x 3) com as coordenadas X, Y, Z
-    da seção COORD.
-    """
     coords = []
-    lendo_coord = False
+    in_coord = False
 
-    with open(arquivo, 'r', encoding='utf-8') as f:
-        for linha in f:
-            linha = linha.strip()
-
-            # Início da seção COORD
-            if linha.startswith("COORD"):
-                lendo_coord = True
+    with open(arquivo, 'r') as f:
+        for line in f:
+            if "COORD" in line:
+                in_coord = True
                 continue
 
-            # Fim da seção
-            if lendo_coord and linha.startswith("/"):
-                break
+            if in_coord:
+                if "/" in line:  # Fim da seção
+                    break
 
-            if lendo_coord:
-                # Remove comentários '--'
-                linha_limpa = linha.split('--')[0]
-                # Extrai números (float ou int)
-                numeros = re.findall(r"[-+]?\d*\.\d+|\d+", linha_limpa)
-                coords.extend(map(float, numeros))
+                # Extrair todos os números válidos
+                numbers = re.findall(r"[-+]?\d*\.\d+|\d+", line.split('--')[0])
+                coords.extend(map(float, numbers))
 
-    # Converte para NumPy e reestrutura em colunas X, Y, Z
     return np.array(coords).reshape(-1, 3)
 
 
@@ -147,33 +136,33 @@ print(f"Número de valores extraídos: {len(zcorn_dados)}")
 NX, NY, NZ = 81, 58, 20  # ajuste para seu modelo
 
 
-
 def ler_actnum_arquivo(caminho_arquivo):
     valores_str = []
     coletando = False
-    
+
     with open(caminho_arquivo, 'r') as f:
         for linha in f:
             linha = linha.strip()
-            
+
             if not coletando:
                 if linha.upper() == "ACTNUM":
                     coletando = True
                 continue
-            
+
             # Quando estiver coletando, para se achar a linha que termina com '/'
             valores_str.append(linha)
             if linha.endswith('/'):
                 break
-    
+
     # Junta tudo e remove barras
     texto_valores = " ".join(valores_str).replace('/', ' ')
-    
+
     # Separa tokens e converte para int (0 ou 1)
     tokens = texto_valores.split()
     valores = [int(t) for t in tokens if t in ('0', '1')]
-    
+
     return np.array(valores)
+
 
 # Exemplo de uso
 array_actnum = ler_actnum_arquivo("UNISIM_I_D_ECLIPSE.data")
@@ -187,14 +176,14 @@ print(array_actnum)
 for i in range(NX):
     for j in range(NY):
         for k in range(NZ):
-            if array_actnum[i] == 1:
+            idx = i + j*NX + k*NX*NY
+            if array_actnum[idx] == 1:
                 print(f"Ativo ({i}, {j}, {k})")
             else:
                 print(f"Inativo ({i}, {j}, {k})")
 
 
-
-x,y,z = coords_array[:, 0], coords_array[:, 1], coords_array[:, 2]
+x, y, z = coords_array[:, 0], coords_array[:, 1], coords_array[:, 2]
 
 
 min_x = np.min(x)
@@ -208,7 +197,6 @@ max_z = np.max(z)
 print(f"Min X: {min_x}, Max X: {max_x}")
 print(f"Min Y: {min_y}, Max Y: {max_y}")
 print(f"Min Z: {min_z}, Max Z: {max_z}")
-
 
 
 # Criar vetores de coordenadas
@@ -251,22 +239,22 @@ for i in range(NX):
         for k in range(NZ):
             if actnum_3d[i, j, k] == 1:
                 status = "Ativo"
+                print(f"({i}, {j}, {k}) | {status} | "
+                      f"PermX={permX_3d[i, j, k]:.2f} | "
+                      f"PermY={permY_3d[i, j, k]:.2f} | "
+                      f"PermZ={permZ_3d[i, j, k]:.2f}")
+
             else:
                 status = "Inativo"
                 # Verifica se alguma permeabilidade é diferente de 1
                 if (permX_3d[i, j, k] != 1 or
                     permY_3d[i, j, k] != 1 or
-                    permZ_3d[i, j, k] != 1):
+                        permZ_3d[i, j, k] != 1):
                     raise ValueError(
                         f"Célula ({i}, {j}, {k}) inativa com permeabilidade ≠ 1: "
-                        f"PermX={permX_3d[i,j,k]}, PermY={permY_3d[i,j,k]}, PermZ={permZ_3d[i,j,k]}"
+                        f"PermX={permX_3d[i, j, k]}, PermY={permY_3d[i, j, k]}, PermZ={permZ_3d[i, j, k]}"
                     )
 
-            print(f"({i}, {j}, {k}) | {status} | "
-                  f"PermX={permX_3d[i,j,k]:.2f} | "
-                  f"PermY={permY_3d[i,j,k]:.2f} | "
-                  f"PermZ={permZ_3d[i,j,k]:.2f}")
-            
 
 # --- Remodelar para 3D ---
 actnum_3d = array_actnum.reshape((NX, NY, NZ), order='F')
@@ -297,23 +285,28 @@ fig = plt.figure(figsize=(15, 5))
 ax1 = fig.add_subplot(131, projection='3d')
 sc1 = ax1.scatter(Xf, Yf, Zf, c=permX_flat, cmap='viridis', s=5)
 ax1.set_title("PermX")
-ax1.set_xlabel("X"); ax1.set_ylabel("Y"); ax1.set_zlabel("Z")
+ax1.set_xlabel("X")
+ax1.set_ylabel("Y")
+ax1.set_zlabel("Z")
 fig.colorbar(sc1, ax=ax1, shrink=0.5, label="mD")
 
 # PermY
 ax2 = fig.add_subplot(132, projection='3d')
 sc2 = ax2.scatter(Xf, Yf, Zf, c=permY_flat, cmap='viridis', s=5)
 ax2.set_title("PermY")
-ax2.set_xlabel("X"); ax2.set_ylabel("Y"); ax2.set_zlabel("Z")
+ax2.set_xlabel("X")
+ax2.set_ylabel("Y")
+ax2.set_zlabel("Z")
 fig.colorbar(sc2, ax=ax2, shrink=0.5, label="mD")
 
 # PermZ
 ax3 = fig.add_subplot(133, projection='3d')
 sc3 = ax3.scatter(Xf, Yf, Zf, c=permZ_flat, cmap='viridis', s=5)
 ax3.set_title("PermZ")
-ax3.set_xlabel("X"); ax3.set_ylabel("Y"); ax3.set_zlabel("Z")
+ax3.set_xlabel("X")
+ax3.set_ylabel("Y")
+ax3.set_zlabel("Z")
 fig.colorbar(sc3, ax=ax3, shrink=0.5, label="mD")
 
 plt.tight_layout()
 plt.show()
-
