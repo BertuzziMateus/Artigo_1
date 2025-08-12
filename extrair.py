@@ -102,26 +102,19 @@ arquivo_data = "UNISIM_I_D_ECLIPSE.data"
 coords_array = extrair_coord_numpy(arquivo_data)
 
 
-x = coords_array[:, 0]
-y = coords_array[:, 1]
-
-X, Y = np.meshgrid(x, y)
+print(coords_array)
 
 
-print(len(X))
-print(len(Y))
+# # Plotando exemplo 3D
 
-
-# Plotando exemplo 3D
-
-fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
-ax.scatter(coords_array[:, 0], coords_array[:, 1], coords_array[:, 2],s=1)
-ax.set_xlabel("X")
-ax.set_ylabel("Y")
-ax.set_zlabel("Z")
-plt.show()
-
+# fig = plt.figure()
+# ax = fig.add_subplot(111, projection='3d')
+# ax.scatter(coords_array[:, 0], coords_array[:, 1], coords_array[:, 2],s=1)
+# ax.set_xlabel("X")
+# ax.set_ylabel("Y")
+# ax.set_zlabel("Z")
+# plt.show()
+# plt.close()
 
 def extrair_zcorn(caminho_arquivo):
     with open(caminho_arquivo, 'r') as arquivo:
@@ -151,43 +144,9 @@ zcorn_dados = extrair_zcorn(caminho)
 print(f"Número de valores extraídos: {len(zcorn_dados)}")
 
 
-# print(zcorn_dados)
-
-
-
-import numpy as np
-import pyvista as pv
-# Exemplo: dimensões do SPECGRID
 NX, NY, NZ = 81, 58, 20  # ajuste para seu modelo
 
-# # Converter PERMX em 3D
-# permx_array = np.array(permx).reshape((NZ, NY, NX), order="C")
 
-# # Criar coordenadas do grid regular
-# x = np.arange(NX+1, dtype=np.float32)
-# y = np.arange(NY+1, dtype=np.float32)
-# z = np.arange(NZ+1, dtype=np.float32)
-# xx, yy, zz = np.meshgrid(x, y, z, indexing="ij")
-
-# # Criar grid estruturado
-# grid = pv.StructuredGrid(xx, yy, zz)
-
-# # Achatar valores no formato que o PyVista espera
-# permx_flat = permx_array.flatten(order="F")
-
-# # Máscara para remover valores iguais a 1
-# permx_masked = np.where(permx_flat != 1, permx_flat, np.nan)
-
-# # Adicionar como dado de célula
-# grid.cell_data["PERMX"] = permx_masked
-
-# # Plotar
-# p = pv.Plotter()
-# p.add_mesh(grid, scalars="PERMX", cmap="viridis", clim=[0, np.nanmax(permx_masked)])
-# p.show()
-
-
-import numpy as np
 
 def ler_actnum_arquivo(caminho_arquivo):
     valores_str = []
@@ -218,4 +177,143 @@ def ler_actnum_arquivo(caminho_arquivo):
 
 # Exemplo de uso
 array_actnum = ler_actnum_arquivo("UNISIM_I_D_ECLIPSE.data")
+
+print(len(array_actnum), "valores de ACTNUM extraídos")
+
+
 print(array_actnum)
+
+
+for i in range(NX):
+    for j in range(NY):
+        for k in range(NZ):
+            if array_actnum[i] == 1:
+                print(f"Ativo ({i}, {j}, {k})")
+            else:
+                print(f"Inativo ({i}, {j}, {k})")
+
+
+
+x,y,z = coords_array[:, 0], coords_array[:, 1], coords_array[:, 2]
+
+
+min_x = np.min(x)
+max_x = np.max(x)
+min_y = np.min(y)
+max_y = np.max(y)
+min_z = np.min(z)
+max_z = np.max(z)
+
+
+print(f"Min X: {min_x}, Max X: {max_x}")
+print(f"Min Y: {min_y}, Max Y: {max_y}")
+print(f"Min Z: {min_z}, Max Z: {max_z}")
+
+
+
+# Criar vetores de coordenadas
+x_vet = np.linspace(min_x, max_x, NX)
+y_vet = np.linspace(min_y, max_y, NY)
+z_vet = np.linspace(min_z, max_z, NZ)
+
+# Criar grid 3D (em ordem F para casar com ACTNUM de simuladores como Eclipse)
+X, Y, Z = np.meshgrid(x_vet, y_vet, z_vet, indexing='ij')
+
+# Transformar em colunas 1D
+Xf = X.flatten(order='F')
+Yf = Y.flatten(order='F')
+Zf = Z.flatten(order='F')
+
+# Selecionar apenas blocos ativos
+mask_ativos = array_actnum == 1
+X_ativos = Xf[mask_ativos]
+Y_ativos = Yf[mask_ativos]
+Z_ativos = Zf[mask_ativos]
+
+# Plotar apenas blocos ativos
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+ax.scatter(X_ativos, Y_ativos, Z_ativos, s=2, c='red')
+ax.set_xlabel("X")
+ax.set_ylabel("Y")
+ax.set_zlabel("Z")
+plt.show()
+
+# Remodela ACTNUM e permeabilidades para 3D (NX, NY, NZ)
+actnum_3d = array_actnum.reshape((NX, NY, NZ), order='F')
+permX_3d = np.array(permx).reshape((NX, NY, NZ), order='F')
+permY_3d = np.array(permy).reshape((NX, NY, NZ), order='F')
+permZ_3d = np.array(permz).reshape((NX, NY, NZ), order='F')
+
+# Agora cada célula (i, j, k) tem seu valor
+for i in range(NX):
+    for j in range(NY):
+        for k in range(NZ):
+            if actnum_3d[i, j, k] == 1:
+                status = "Ativo"
+            else:
+                status = "Inativo"
+                # Verifica se alguma permeabilidade é diferente de 1
+                if (permX_3d[i, j, k] != 1 or
+                    permY_3d[i, j, k] != 1 or
+                    permZ_3d[i, j, k] != 1):
+                    raise ValueError(
+                        f"Célula ({i}, {j}, {k}) inativa com permeabilidade ≠ 1: "
+                        f"PermX={permX_3d[i,j,k]}, PermY={permY_3d[i,j,k]}, PermZ={permZ_3d[i,j,k]}"
+                    )
+
+            print(f"({i}, {j}, {k}) | {status} | "
+                  f"PermX={permX_3d[i,j,k]:.2f} | "
+                  f"PermY={permY_3d[i,j,k]:.2f} | "
+                  f"PermZ={permZ_3d[i,j,k]:.2f}")
+            
+
+# --- Remodelar para 3D ---
+actnum_3d = array_actnum.reshape((NX, NY, NZ), order='F')
+permX_3d = np.array(permx).reshape((NX, NY, NZ), order='F')
+permY_3d = np.array(permy).reshape((NX, NY, NZ), order='F')
+permZ_3d = np.array(permz).reshape((NX, NY, NZ), order='F')
+
+# --- Criar o grid 3D ---
+x_vet = np.linspace(min_x, max_x, NX)
+y_vet = np.linspace(min_y, max_y, NY)
+z_vet = np.linspace(min_z, max_z, NZ)
+X, Y, Z = np.meshgrid(x_vet, y_vet, z_vet, indexing='ij')
+
+# --- Flatten e filtrar ativos ---
+ativos = actnum_3d.flatten(order='F') == 1
+Xf = X.flatten(order='F')[ativos]
+Yf = Y.flatten(order='F')[ativos]
+Zf = Z.flatten(order='F')[ativos]
+
+permX_flat = permX_3d.flatten(order='F')[ativos]
+permY_flat = permY_3d.flatten(order='F')[ativos]
+permZ_flat = permZ_3d.flatten(order='F')[ativos]
+
+# --- Plot com 3 subplots ---
+fig = plt.figure(figsize=(15, 5))
+
+# PermX
+ax1 = fig.add_subplot(131, projection='3d')
+sc1 = ax1.scatter(Xf, Yf, Zf, c=permX_flat, cmap='viridis', s=5)
+ax1.set_title("PermX")
+ax1.set_xlabel("X"); ax1.set_ylabel("Y"); ax1.set_zlabel("Z")
+fig.colorbar(sc1, ax=ax1, shrink=0.5, label="mD")
+
+# PermY
+ax2 = fig.add_subplot(132, projection='3d')
+sc2 = ax2.scatter(Xf, Yf, Zf, c=permY_flat, cmap='viridis', s=5)
+ax2.set_title("PermY")
+ax2.set_xlabel("X"); ax2.set_ylabel("Y"); ax2.set_zlabel("Z")
+fig.colorbar(sc2, ax=ax2, shrink=0.5, label="mD")
+
+# PermZ
+ax3 = fig.add_subplot(133, projection='3d')
+sc3 = ax3.scatter(Xf, Yf, Zf, c=permZ_flat, cmap='viridis', s=5)
+ax3.set_title("PermZ")
+ax3.set_xlabel("X"); ax3.set_ylabel("Y"); ax3.set_zlabel("Z")
+fig.colorbar(sc3, ax=ax3, shrink=0.5, label="mD")
+
+plt.tight_layout()
+plt.show()
+
