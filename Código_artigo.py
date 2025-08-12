@@ -186,132 +186,190 @@ F = np.zeros(Ny*Nx)
 i_0 = 0
 for j in range(0, Nx):
     for i in range(0, Ny):
-        
+
         if j == indice_poco and i == indice_poco:
-            transmissibilidade_x_leste = 2 / ((1/permeabilidades[j, i]) + (1/permeabilidades[j, i+1]))
-            transmissibilidade_x_oeste = 2 / ((1/permeabilidades[j, i]) + (1/permeabilidades[j, i-1]))
-            transmissibilidade_y_sul = 2 / ((1/permeabilidades[j, i]) + (1/permeabilidades[j+1, i]))
-            transmissibilidade_y_norte = 2 / ((1/permeabilidades[j, i]) + (1/permeabilidades[j-1, i]))
-            
+            transmissibilidade_x_leste = 2 / \
+                ((1/permeabilidades[j, i]) + (1/permeabilidades[j, i+1]))
+            transmissibilidade_x_oeste = 2 / \
+                ((1/permeabilidades[j, i]) + (1/permeabilidades[j, i-1]))
+            transmissibilidade_y_sul = 2 / \
+                ((1/permeabilidades[j, i]) + (1/permeabilidades[j+1, i]))
+            transmissibilidade_y_norte = 2 / \
+                ((1/permeabilidades[j, i]) + (1/permeabilidades[j-1, i]))
+
             eta = (permeabilidades[j, i] / (phi*mi*ct))
             epsilon = ((2*np.pi*eta) / (dx*dy*np.log(req/rw))) * dt
-            
-            A_[i_0, int(indice[j, i])] = 1 + (beta*rx*transmissibilidade_x_leste) + (beta*rx*transmissibilidade_x_oeste) +(beta*ry*transmissibilidade_y_sul) + (beta*ry*transmissibilidade_y_norte) + epsilon
-            A_[i_0, int(indice[j, i+1])] = -(beta*rx*transmissibilidade_x_leste)
-            A_[i_0, int(indice[j, i-1])] = -(beta*rx*transmissibilidade_x_oeste)
-            A_[i_0, int(indice[j-1, i])] = -(beta*ry*transmissibilidade_y_norte)
+
+            A_[i_0, int(indice[j, i])] = 1 + (beta*rx*transmissibilidade_x_leste) + (beta*rx*transmissibilidade_x_oeste) + \
+                (beta*ry*transmissibilidade_y_sul) + \
+                (beta*ry*transmissibilidade_y_norte) + epsilon
+            A_[i_0, int(indice[j, i+1])] = - \
+                (beta*rx*transmissibilidade_x_leste)
+            A_[i_0, int(indice[j, i-1])] = - \
+                (beta*rx*transmissibilidade_x_oeste)
+            A_[i_0, int(indice[j-1, i])] = - \
+                (beta*ry*transmissibilidade_y_norte)
             A_[i_0, int(indice[j+1, i])] = -(beta*ry*transmissibilidade_y_sul)
-            
+
             F[i_0] = epsilon * Pwf_prod
 
         elif i == 0 and j == 0:
             transmissibilidade_x_oeste = 0
-            transmissibilidade_x_leste = 2 / ((1/permeabilidades[j, i]) + (1/permeabilidades[j, i+1]))
+            transmissibilidade_x_leste = 2 / \
+                ((1/permeabilidades[j, i]) + (1/permeabilidades[j, i+1]))
             transmissibilidade_y_norte = 0
-            transmissibilidade_y_sul = 2 / ((1/permeabilidades[j, i]) + (1/permeabilidades[j+1, i]))
+            transmissibilidade_y_sul = 2 / \
+                ((1/permeabilidades[j, i]) + (1/permeabilidades[j+1, i]))
 
-            A_[i_0, int(indice[j, i])] = 1 + (beta*rx*transmissibilidade_x_leste) + (beta*rx*transmissibilidade_x_oeste) + (beta*ry*transmissibilidade_y_sul) + (beta*ry*transmissibilidade_y_norte)
-            A_[i_0, int(indice[j, i+1])] = -(beta*rx*transmissibilidade_x_leste)
+            A_[i_0, int(indice[j, i])] = 1 + (beta*rx*transmissibilidade_x_leste) + (beta*rx *
+                                                                                     transmissibilidade_x_oeste) + (beta*ry*transmissibilidade_y_sul) + (beta*ry*transmissibilidade_y_norte)
+            A_[i_0, int(indice[j, i+1])] = - \
+                (beta*rx*transmissibilidade_x_leste)
             A_[i_0, int(indice[j+1, i])] = -(beta*ry*transmissibilidade_y_sul)
             F[i_0] = 0
 
         elif j == 0 and i == Ny-1:
             transmissibilidade_x_leste = 0
-            transmissibilidade_x_oeste = 2 / ((1/permeabilidades[j, i]) + (1/permeabilidades[j, i-1]))
-            transmissibilidade_y_sul = 2 / ((1/permeabilidades[j, i]) + (1/permeabilidades[j+1, i]))
+            transmissibilidade_x_oeste = 2 / \
+                ((1/permeabilidades[j, i]) + (1/permeabilidades[j, i-1]))
+            transmissibilidade_y_sul = 2 / \
+                ((1/permeabilidades[j, i]) + (1/permeabilidades[j+1, i]))
             transmissibilidade_y_norte = 0
 
-            A_[i_0, int(indice[j, i])] = 1 + (beta*rx*transmissibilidade_x_leste) + (beta*rx*transmissibilidade_x_oeste) +(beta*ry*transmissibilidade_y_sul) + (beta*ry*transmissibilidade_y_norte)
-            A_[i_0, int(indice[j, i-1])] = -(beta*rx*transmissibilidade_x_oeste)
+            A_[i_0, int(indice[j, i])] = 1 + (beta*rx*transmissibilidade_x_leste) + (beta*rx *
+                                                                                     transmissibilidade_x_oeste) + (beta*ry*transmissibilidade_y_sul) + (beta*ry*transmissibilidade_y_norte)
+            A_[i_0, int(indice[j, i-1])] = - \
+                (beta*rx*transmissibilidade_x_oeste)
             A_[i_0, int(indice[j+1, i])] = -(beta*ry*transmissibilidade_y_sul)
             F[i_0] = 0
 
         elif j == Nx-1 and i == 0:
             transmissibilidade_x_oeste = 0
-            transmissibilidade_x_leste = 2 / ((1/permeabilidades[j, i]) + (1/permeabilidades[j, i+1]))
-            transmissibilidade_y_norte = 2 / ((1/permeabilidades[j, i]) + (1/permeabilidades[j-1, i]))
+            transmissibilidade_x_leste = 2 / \
+                ((1/permeabilidades[j, i]) + (1/permeabilidades[j, i+1]))
+            transmissibilidade_y_norte = 2 / \
+                ((1/permeabilidades[j, i]) + (1/permeabilidades[j-1, i]))
             transmissibilidade_y_sul = 0
 
-            A_[i_0, int(indice[j, i])] = 1 + (beta*rx*transmissibilidade_x_leste) + (beta*rx*transmissibilidade_x_oeste) + (beta*ry*transmissibilidade_y_sul) + (beta*ry*transmissibilidade_y_norte)
-            A_[i_0, int(indice[j, i+1])] = -(beta*rx*transmissibilidade_x_leste)
-            A_[i_0, int(indice[j-1, i])] = -(beta*ry*transmissibilidade_y_norte)
+            A_[i_0, int(indice[j, i])] = 1 + (beta*rx*transmissibilidade_x_leste) + (beta*rx *
+                                                                                     transmissibilidade_x_oeste) + (beta*ry*transmissibilidade_y_sul) + (beta*ry*transmissibilidade_y_norte)
+            A_[i_0, int(indice[j, i+1])] = - \
+                (beta*rx*transmissibilidade_x_leste)
+            A_[i_0, int(indice[j-1, i])] = - \
+                (beta*ry*transmissibilidade_y_norte)
             F[i_0] = 0
 
         elif j == Nx-1 and i == Ny-1:
             transmissibilidade_x_leste = 0
-            transmissibilidade_x_oeste = 2 / ((1/permeabilidades[j, i]) + (1/permeabilidades[j, i-1]))
-            transmissibilidade_y_norte = 2 / ((1/permeabilidades[j, i]) + (1/permeabilidades[j-1, i]))
+            transmissibilidade_x_oeste = 2 / \
+                ((1/permeabilidades[j, i]) + (1/permeabilidades[j, i-1]))
+            transmissibilidade_y_norte = 2 / \
+                ((1/permeabilidades[j, i]) + (1/permeabilidades[j-1, i]))
             transmissibilidade_y_sul = 0
 
-            A_[i_0, int(indice[j, i])] = 1 + (beta*rx*transmissibilidade_x_leste) + (beta*rx*transmissibilidade_x_oeste) + (beta*ry*transmissibilidade_y_sul) + (beta*ry*transmissibilidade_y_norte)
-            A_[i_0, int(indice[j, i-1])] = -(beta*rx*transmissibilidade_x_oeste)
-            A_[i_0, int(indice[j-1, i])] = -(beta*ry*transmissibilidade_y_norte)
+            A_[i_0, int(indice[j, i])] = 1 + (beta*rx*transmissibilidade_x_leste) + (beta*rx *
+                                                                                     transmissibilidade_x_oeste) + (beta*ry*transmissibilidade_y_sul) + (beta*ry*transmissibilidade_y_norte)
+            A_[i_0, int(indice[j, i-1])] = - \
+                (beta*rx*transmissibilidade_x_oeste)
+            A_[i_0, int(indice[j-1, i])] = - \
+                (beta*ry*transmissibilidade_y_norte)
             F[i_0] = 0
 
         elif j == 0 and i > 0 and i < Ny-1:
-            transmissibilidade_x_leste = 2 / ((1/permeabilidades[j, i]) + (1/permeabilidades[j, i+1]))
-            transmissibilidade_x_oeste = 2 / ((1/permeabilidades[j, i]) + (1/permeabilidades[j, i-1]))
-            transmissibilidade_y_sul = 2 / ((1/permeabilidades[j, i]) + (1/permeabilidades[j+1, i]))
+            transmissibilidade_x_leste = 2 / \
+                ((1/permeabilidades[j, i]) + (1/permeabilidades[j, i+1]))
+            transmissibilidade_x_oeste = 2 / \
+                ((1/permeabilidades[j, i]) + (1/permeabilidades[j, i-1]))
+            transmissibilidade_y_sul = 2 / \
+                ((1/permeabilidades[j, i]) + (1/permeabilidades[j+1, i]))
             transmissibilidade_y_norte = 0
 
-            A_[i_0, int(indice[j, i])] = 1 + (beta*rx*transmissibilidade_x_leste) + (beta*rx*transmissibilidade_x_oeste) + (beta*ry*transmissibilidade_y_sul) + (beta*ry*transmissibilidade_y_norte)
-            A_[i_0, int(indice[j, i+1])] = -(beta*rx*transmissibilidade_x_leste)
-            A_[i_0, int(indice[j, i-1])] = -(beta*rx*transmissibilidade_x_oeste)
+            A_[i_0, int(indice[j, i])] = 1 + (beta*rx*transmissibilidade_x_leste) + (beta*rx *
+                                                                                     transmissibilidade_x_oeste) + (beta*ry*transmissibilidade_y_sul) + (beta*ry*transmissibilidade_y_norte)
+            A_[i_0, int(indice[j, i+1])] = - \
+                (beta*rx*transmissibilidade_x_leste)
+            A_[i_0, int(indice[j, i-1])] = - \
+                (beta*rx*transmissibilidade_x_oeste)
             A_[i_0, int(indice[j+1, i])] = -(beta*ry*transmissibilidade_y_sul)
             F[i_0] = 0
 
         elif i == 0 and j > 0 and j < Nx-1:
-            transmissibilidade_x_leste = 2 / ((1/permeabilidades[j, i]) + (1/permeabilidades[j, i+1]))
+            transmissibilidade_x_leste = 2 / \
+                ((1/permeabilidades[j, i]) + (1/permeabilidades[j, i+1]))
             transmissibilidade_x_oeste = 0
-            transmissibilidade_y_sul = 2 / ((1/permeabilidades[j, i]) + (1/permeabilidades[j+1, i]))
-            transmissibilidade_y_norte = 2 / ((1/permeabilidades[j, i]) + (1/permeabilidades[j-1, i]))
+            transmissibilidade_y_sul = 2 / \
+                ((1/permeabilidades[j, i]) + (1/permeabilidades[j+1, i]))
+            transmissibilidade_y_norte = 2 / \
+                ((1/permeabilidades[j, i]) + (1/permeabilidades[j-1, i]))
 
-            A_[i_0, int(indice[j, i])] = 1 + (beta*rx*transmissibilidade_x_leste) + (beta*rx*transmissibilidade_x_oeste) +(beta*ry*transmissibilidade_y_sul) + (beta*ry*transmissibilidade_y_norte)
-            A_[i_0, int(indice[j, i+1])] = -(beta*rx*transmissibilidade_x_leste)
-            A_[i_0, int(indice[j-1, i])] = -(beta*ry*transmissibilidade_y_norte)
+            A_[i_0, int(indice[j, i])] = 1 + (beta*rx*transmissibilidade_x_leste) + (beta*rx *
+                                                                                     transmissibilidade_x_oeste) + (beta*ry*transmissibilidade_y_sul) + (beta*ry*transmissibilidade_y_norte)
+            A_[i_0, int(indice[j, i+1])] = - \
+                (beta*rx*transmissibilidade_x_leste)
+            A_[i_0, int(indice[j-1, i])] = - \
+                (beta*ry*transmissibilidade_y_norte)
             A_[i_0, int(indice[j+1, i])] = -(beta*ry*transmissibilidade_y_sul)
             F[i_0] = 0
 
         elif i == Ny-1 and j > 0 and j < Nx-1:
             transmissibilidade_x_leste = 0
-            transmissibilidade_x_oeste = 2 / ((1/permeabilidades[j, i]) + (1/permeabilidades[j, i-1]))
-            transmissibilidade_y_sul = 2 / ((1/permeabilidades[j, i]) + (1/permeabilidades[j+1, i]))
-            transmissibilidade_y_norte = 2 / ((1/permeabilidades[j, i]) + (1/permeabilidades[j-1, i]))
+            transmissibilidade_x_oeste = 2 / \
+                ((1/permeabilidades[j, i]) + (1/permeabilidades[j, i-1]))
+            transmissibilidade_y_sul = 2 / \
+                ((1/permeabilidades[j, i]) + (1/permeabilidades[j+1, i]))
+            transmissibilidade_y_norte = 2 / \
+                ((1/permeabilidades[j, i]) + (1/permeabilidades[j-1, i]))
 
-            A_[i_0, int(indice[j, i])] = 1 + (beta*rx*transmissibilidade_x_leste) + (beta*rx*transmissibilidade_x_oeste) + (beta*ry*transmissibilidade_y_sul) + (beta*ry*transmissibilidade_y_norte)
-            A_[i_0, int(indice[j, i-1])] = -(beta*rx*transmissibilidade_x_oeste)
-            A_[i_0, int(indice[j-1, i])] = -(beta*ry*transmissibilidade_y_norte)
+            A_[i_0, int(indice[j, i])] = 1 + (beta*rx*transmissibilidade_x_leste) + (beta*rx *
+                                                                                     transmissibilidade_x_oeste) + (beta*ry*transmissibilidade_y_sul) + (beta*ry*transmissibilidade_y_norte)
+            A_[i_0, int(indice[j, i-1])] = - \
+                (beta*rx*transmissibilidade_x_oeste)
+            A_[i_0, int(indice[j-1, i])] = - \
+                (beta*ry*transmissibilidade_y_norte)
             A_[i_0, int(indice[j+1, i])] = -(beta*ry*transmissibilidade_y_sul)
             F[i_0] = 0
 
         elif j == Nx-1 and i > 0 and i < Ny-1:
-            transmissibilidade_x_leste = 2 / ((1/permeabilidades[j, i]) + (1/permeabilidades[j, i+1]))
-            transmissibilidade_x_oeste = 2 / ((1/permeabilidades[j, i]) + (1/permeabilidades[j, i-1]))
+            transmissibilidade_x_leste = 2 / \
+                ((1/permeabilidades[j, i]) + (1/permeabilidades[j, i+1]))
+            transmissibilidade_x_oeste = 2 / \
+                ((1/permeabilidades[j, i]) + (1/permeabilidades[j, i-1]))
             transmissibilidade_y_sul = 0
-            transmissibilidade_y_norte = 2 / ((1/permeabilidades[j, i]) + (1/permeabilidades[j-1, i]))
+            transmissibilidade_y_norte = 2 / \
+                ((1/permeabilidades[j, i]) + (1/permeabilidades[j-1, i]))
 
-            A_[i_0, int(indice[j, i])] = 1 + (beta*rx*transmissibilidade_x_leste) + (beta*rx*transmissibilidade_x_oeste) +(beta*ry*transmissibilidade_y_sul) + (beta*ry*transmissibilidade_y_norte)
-            A_[i_0, int(indice[j, i+1])] = -(beta*rx*transmissibilidade_x_leste)
-            A_[i_0, int(indice[j, i-1])] = -(beta*rx*transmissibilidade_x_oeste)
-            A_[i_0, int(indice[j-1, i])] = -(beta*ry*transmissibilidade_y_norte)
+            A_[i_0, int(indice[j, i])] = 1 + (beta*rx*transmissibilidade_x_leste) + (beta*rx *
+                                                                                     transmissibilidade_x_oeste) + (beta*ry*transmissibilidade_y_sul) + (beta*ry*transmissibilidade_y_norte)
+            A_[i_0, int(indice[j, i+1])] = - \
+                (beta*rx*transmissibilidade_x_leste)
+            A_[i_0, int(indice[j, i-1])] = - \
+                (beta*rx*transmissibilidade_x_oeste)
+            A_[i_0, int(indice[j-1, i])] = - \
+                (beta*ry*transmissibilidade_y_norte)
             F[i_0] = 0
 
         elif j > 0 and i > 0 and j < Nx-1 and i < Ny-1:
-            transmissibilidade_x_leste = 2 / ((1/permeabilidades[j, i]) + (1/permeabilidades[j, i+1]))
-            transmissibilidade_x_oeste = 2 / ((1/permeabilidades[j, i]) + (1/permeabilidades[j, i-1]))
-            transmissibilidade_y_sul = 2 / ((1/permeabilidades[j, i]) + (1/permeabilidades[j+1, i]))
-            transmissibilidade_y_norte = 2 / ((1/permeabilidades[j, i]) + (1/permeabilidades[j-1, i]))
+            transmissibilidade_x_leste = 2 / \
+                ((1/permeabilidades[j, i]) + (1/permeabilidades[j, i+1]))
+            transmissibilidade_x_oeste = 2 / \
+                ((1/permeabilidades[j, i]) + (1/permeabilidades[j, i-1]))
+            transmissibilidade_y_sul = 2 / \
+                ((1/permeabilidades[j, i]) + (1/permeabilidades[j+1, i]))
+            transmissibilidade_y_norte = 2 / \
+                ((1/permeabilidades[j, i]) + (1/permeabilidades[j-1, i]))
 
-            A_[i_0, int(indice[j, i])] = 1 + (beta*rx*transmissibilidade_x_leste) + (beta*rx*transmissibilidade_x_oeste) + (beta*ry*transmissibilidade_y_sul) + (beta*ry*transmissibilidade_y_norte)
-            A_[i_0, int(indice[j, i+1])] = -(beta*rx*transmissibilidade_x_leste)
-            A_[i_0, int(indice[j, i-1])] = -(beta*rx*transmissibilidade_x_oeste)
-            A_[i_0, int(indice[j-1, i])] = -(beta*ry*transmissibilidade_y_norte)
+            A_[i_0, int(indice[j, i])] = 1 + (beta*rx*transmissibilidade_x_leste) + (beta*rx *
+                                                                                     transmissibilidade_x_oeste) + (beta*ry*transmissibilidade_y_sul) + (beta*ry*transmissibilidade_y_norte)
+            A_[i_0, int(indice[j, i+1])] = - \
+                (beta*rx*transmissibilidade_x_leste)
+            A_[i_0, int(indice[j, i-1])] = - \
+                (beta*rx*transmissibilidade_x_oeste)
+            A_[i_0, int(indice[j-1, i])] = - \
+                (beta*ry*transmissibilidade_y_norte)
             A_[i_0, int(indice[j+1, i])] = -(beta*ry*transmissibilidade_y_sul)
             F[i_0] = 0
 
         i_0 += 1
-
-
 
 
 # ################################################################################

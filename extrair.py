@@ -6,7 +6,6 @@ from matplotlib.colors import LinearSegmentedColormap
 import time
 
 
-
 def expand_numbers_safe(text):
     valores = []
     for token in text.split():
@@ -87,7 +86,6 @@ def extrair_coord_numpy(arquivo):
 # Exemplo de uso
 arquivo_data = "UNISIM_I_D_ECLIPSE.data"
 coords_array = extrair_coord_numpy(arquivo_data)
-
 
 
 def extrair_zcorn(caminho_arquivo):
@@ -193,18 +191,19 @@ Zf = Z.flatten(order='F')
 
 # Selecionar apenas blocos ativos
 mask_ativos = array_actnum == 1
+
 X_ativos = Xf[mask_ativos]
 Y_ativos = Yf[mask_ativos]
 Z_ativos = Zf[mask_ativos]
 
-# Plotar apenas blocos ativos
-fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
-ax.scatter(X_ativos, Y_ativos, Z_ativos, s=2, c='red')
-ax.set_xlabel("X")
-ax.set_ylabel("Y")
-ax.set_zlabel("Z")
-plt.show()
+# # Plotar apenas blocos ativos
+# fig = plt.figure()
+# ax = fig.add_subplot(111, projection='3d')
+# ax.scatter(X_ativos, Y_ativos, Z_ativos, s=2, c='black')
+# ax.set_xlabel("X")
+# ax.set_ylabel("Y")
+# ax.set_zlabel("Z")
+# plt.show()
 
 # Remodela ACTNUM e permeabilidades para 3D (NX, NY, NZ)
 actnum_3d = array_actnum.reshape((NX, NY, NZ), order='F')
@@ -223,7 +222,6 @@ for i in range(NX):
                       f"PermX={permX_3d[i, j, k]:.2f} | "
                       f"PermY={permY_3d[i, j, k]:.2f} | "
                       f"PermZ={permZ_3d[i, j, k]:.2f}")
-                    
 
             else:
                 status = "Inativo"
@@ -234,7 +232,6 @@ for i in range(NX):
                         f"Célula ({i}, {j}, {k}) inativa com permeabilidade ≠ 1: "
                         f"PermX={permX_3d[i, j, k]}, PermY={permY_3d[i, j, k]}, PermZ={permZ_3d[i, j, k]}"
                     )
-
 
 
 # Colormap customizado
@@ -264,73 +261,84 @@ permX_flat = permX_3d.flatten(order='F')[ativos]
 permY_flat = permY_3d.flatten(order='F')[ativos]
 permZ_flat = permZ_3d.flatten(order='F')[ativos]
 
-# --- Plot com 3 subplots ---
-fig = plt.figure(figsize=(15, 5))
+# # --- Plot com 3 subplots ---
+# fig = plt.figure(figsize=(15, 5))
 
-# PermX
-ax1 = fig.add_subplot(131, projection='3d')
-sc1 = ax1.scatter(Xf, Yf, Zf, c=permX_flat, cmap=cmap_custom, s=5)
-ax1.set_title("PermX")
-ax1.set_xlabel("X")
-ax1.set_ylabel("Y")
-ax1.set_zlabel("Z")
-fig.colorbar(sc1, ax=ax1, shrink=0.5, label="mD")
+# # PermX
+# ax1 = fig.add_subplot(131, projection='3d')
+# sc1 = ax1.scatter(Xf, Yf, Zf, c=permX_flat, cmap=cmap_custom, s=5)
+# ax1.set_title("PermX")
+# ax1.set_xlabel("X")
+# ax1.set_ylabel("Y")
+# ax1.set_zlabel("Z")
+# fig.colorbar(sc1, ax=ax1, shrink=0.5, label="mD")
 
-# PermY
-ax2 = fig.add_subplot(132, projection='3d')
-sc2 = ax2.scatter(Xf, Yf, Zf, c=permY_flat, cmap=cmap_custom, s=5)
-ax2.set_title("PermY")
-ax2.set_xlabel("X")
-ax2.set_ylabel("Y")
-ax2.set_zlabel("Z")
-fig.colorbar(sc2, ax=ax2, shrink=0.5, label="mD")
+# # PermY
+# ax2 = fig.add_subplot(132, projection='3d')
+# sc2 = ax2.scatter(Xf, Yf, Zf, c=permY_flat, cmap=cmap_custom, s=5)
+# ax2.set_title("PermY")
+# ax2.set_xlabel("X")
+# ax2.set_ylabel("Y")
+# ax2.set_zlabel("Z")
+# fig.colorbar(sc2, ax=ax2, shrink=0.5, label="mD")
 
-# PermZ
-ax3 = fig.add_subplot(133, projection='3d')
-sc3 = ax3.scatter(Xf, Yf, Zf, c=permZ_flat, cmap=cmap_custom, s=5)
-ax3.set_title("PermZ")
-ax3.set_xlabel("X")
-ax3.set_ylabel("Y")
-ax3.set_zlabel("Z")
-fig.colorbar(sc3, ax=ax3, shrink=0.5, label="mD")
+# # PermZ
+# ax3 = fig.add_subplot(133, projection='3d')
+# sc3 = ax3.scatter(Xf, Yf, Zf, c=permZ_flat, cmap=cmap_custom, s=5)
+# ax3.set_title("PermZ")
+# ax3.set_xlabel("X")
+# ax3.set_ylabel("Y")
+# ax3.set_zlabel("Z")
+# fig.colorbar(sc3, ax=ax3, shrink=0.5, label="mD")
 
-plt.tight_layout()
-plt.show()
+# plt.tight_layout()
+# plt.show()
 
-# Remodelar arrays para 3D
-actnum_3d = array_actnum.reshape((NX, NY, NZ), order='F')
-permX_3d = np.array(permx).reshape((NX, NY, NZ), order='F')
+# # Remodelar arrays para 3D
+# actnum_3d = array_actnum.reshape((NX, NY, NZ), order='F')
+# permX_3d = np.array(permx).reshape((NX, NY, NZ), order='F')
 
-# Coordenadas
-x_vet = np.linspace(min_x, max_x, NX)
-y_vet = np.linspace(min_y, max_y, NY)
-X2d, Y2d = np.meshgrid(x_vet, y_vet, indexing='ij')
-Xf = X2d.flatten(order='F')
-Yf = Y2d.flatten(order='F')
-
-
+# # Coordenadas
+# x_vet = np.linspace(min_x, max_x, NX)
+# y_vet = np.linspace(min_y, max_y, NY)
+# X2d, Y2d = np.meshgrid(x_vet, y_vet, indexing='ij')
+# Xf = X2d.flatten(order='F')
+# Yf = Y2d.flatten(order='F')
 
 
-for k in range(NZ):
-  
-    permX_k = permX_3d[:, :, k].flatten(order='F')
-    actnum_k = actnum_3d[:, :, k].flatten(order='F')
+# for k in range(NZ):
 
- 
-    mask_ativos = actnum_k == 1
-    Xf_ativos = Xf[mask_ativos]
-    Yf_ativos = Yf[mask_ativos]
-    permX_ativos = permX_k[mask_ativos]
+#     permX_k = permX_3d[:, :, k].flatten(order='F')
+#     actnum_k = actnum_3d[:, :, k].flatten(order='F')
 
 
-    plt.figure(figsize=(8, 6))
-    sc = plt.scatter(Xf_ativos, Yf_ativos, marker='s', c=permX_ativos, cmap=cmap_custom, s=20)
-    plt.colorbar(sc, label='PermX (mD)')
-    plt.xlabel('X')
-    plt.ylabel('Y')
-    plt.xlim(min_x-1000, max_x+1000)
-    plt.ylim(min_y-1000, max_y+1000)
-    plt.title(f'PermX camada k={k} - Blocos ativos')
-    plt.gca().set_aspect('equal')
-    plt.grid(alpha=0.2)
-    plt.show()
+#     mask_ativos = actnum_k == 1
+#     Xf_ativos = Xf[mask_ativos]
+#     Yf_ativos = Yf[mask_ativos]
+#     permX_ativos = permX_k[mask_ativos]
+
+
+#     plt.figure(figsize=(8, 6))
+#     sc = plt.scatter(Xf_ativos, Yf_ativos, marker='s', c=permX_ativos, cmap=cmap_custom, s=40)
+#     plt.colorbar(sc, label='PermX (mD)')
+#     plt.xlabel('X')
+#     plt.ylabel('Y')
+#     plt.xlim(min_x-1000, max_x+1000)
+#     plt.ylim(min_y-1000, max_y+1000)
+#     plt.title(f'PermX camada k={k} - Blocos ativos')
+#     plt.gca().set_aspect('equal')
+#     plt.grid(alpha=0.2)
+#     plt.show()
+
+
+# print(a)
+
+
+# Agora cada célula (i, j, k) tem seu valor
+for i in range(NX):
+    for j in range(NY):
+        for k in range(NZ):
+            if actnum_3d[i, j, k] == 1:
+                print(k)
+                time.sleep(10)
+                print(permX_3d[i, j, k])
