@@ -29,10 +29,10 @@ salvamento = 100  # segundos (tempo de salvamento)
 ################################################################################
 
 ############################ Discretização #####################################
-Nx = 1000
-Ny = 1000
+Nx = 200
+Ny = 200
 dt = 1000  # segundos
-t_max = 10*3600  # segundos
+t_max = 300*3600  # segundos
 dx = Lx/Nx
 dy = Ly/Ny
 rx = dt / (dx**2)  # s/m²
@@ -137,7 +137,7 @@ X, Y = np.meshgrid(x, y)
 
 
 # Permeabilidade base e interna
-k_out = np.nan
+k_out = 1*md_to_m2
 k_in = 500*md_to_m2  # m²
 k_in_high = 1000 * md_to_m2  # m² (convertido de mD)
 

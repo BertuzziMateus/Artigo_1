@@ -197,13 +197,14 @@ Y_ativos = Yf[mask_ativos]
 Z_ativos = Zf[mask_ativos]
 
 # # Plotar apenas blocos ativos
-# fig = plt.figure()
-# ax = fig.add_subplot(111, projection='3d')
-# ax.scatter(X_ativos, Y_ativos, Z_ativos, s=2, c='black')
-# ax.set_xlabel("X")
-# ax.set_ylabel("Y")
-# ax.set_zlabel("Z")
-# plt.show()
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+ax.scatter(X_ativos, Y_ativos, Z_ativos, s=2, c='black')
+ax.set_xlabel("X")
+ax.set_ylabel("Y")
+ax.set_zlabel("Z")
+plt.show()
+plt.close()
 
 # Remodela ACTNUM e permeabilidades para 3D (NX, NY, NZ)
 actnum_3d = array_actnum.reshape((NX, NY, NZ), order='F')
@@ -262,37 +263,38 @@ permY_flat = permY_3d.flatten(order='F')[ativos]
 permZ_flat = permZ_3d.flatten(order='F')[ativos]
 
 # --- Plot com 3 subplots ---
-# fig = plt.figure(figsize=(15, 5))
+fig = plt.figure(figsize=(15, 5))
 
-# # PermX
-# ax1 = fig.add_subplot(131, projection='3d')
-# sc1 = ax1.scatter(Xf, Yf, Zf, marker='s',c=permX_flat, cmap=cmap_custom, s=10)
-# ax1.set_title("PermX")
-# ax1.set_xlabel("X")
-# ax1.set_ylabel("Y")
-# ax1.set_zlabel("Z")
-# fig.colorbar(sc1, ax=ax1, shrink=0.5, label="mD")
+# PermX
+ax1 = fig.add_subplot(131, projection='3d')
+sc1 = ax1.scatter(Xf, Yf, Zf, marker='s',c=permX_flat, cmap=cmap_custom, s=10)
+ax1.set_title("PermX")
+ax1.set_xlabel("X")
+ax1.set_ylabel("Y")
+ax1.set_zlabel("Z")
+fig.colorbar(sc1, ax=ax1, shrink=0.5, label="mD")
 
-# # PermY
-# ax2 = fig.add_subplot(132, projection='3d')
-# sc2 = ax2.scatter(Xf, Yf, Zf,marker='s', c=permY_flat, cmap=cmap_custom, s=10)
-# ax2.set_title("PermY")
-# ax2.set_xlabel("X")
-# ax2.set_ylabel("Y")
-# ax2.set_zlabel("Z")
-# fig.colorbar(sc2, ax=ax2, shrink=0.5, label="mD")
+# PermY
+ax2 = fig.add_subplot(132, projection='3d')
+sc2 = ax2.scatter(Xf, Yf, Zf,marker='s', c=permY_flat, cmap=cmap_custom, s=10)
+ax2.set_title("PermY")
+ax2.set_xlabel("X")
+ax2.set_ylabel("Y")
+ax2.set_zlabel("Z")
+fig.colorbar(sc2, ax=ax2, shrink=0.5, label="mD")
 
-# # PermZ
-# ax3 = fig.add_subplot(133, projection='3d')
-# sc3 = ax3.scatter(Xf, Yf, Zf, marker='s',c=permZ_flat, cmap=cmap_custom, s=10)
-# ax3.set_title("PermZ")
-# ax3.set_xlabel("X")
-# ax3.set_ylabel("Y")
-# ax3.set_zlabel("Z")
-# fig.colorbar(sc3, ax=ax3, shrink=0.5, label="mD")
+# PermZ
+ax3 = fig.add_subplot(133, projection='3d')
+sc3 = ax3.scatter(Xf, Yf, Zf, marker='s',c=permZ_flat, cmap=cmap_custom, s=10)
+ax3.set_title("PermZ")
+ax3.set_xlabel("X")
+ax3.set_ylabel("Y")
+ax3.set_zlabel("Z")
+fig.colorbar(sc3, ax=ax3, shrink=0.5, label="mD")
 
-# plt.tight_layout()
-# plt.show()
+plt.tight_layout()
+plt.show()
+plt.close()
 
 # Remodelar arrays para 3D
 actnum_3d = array_actnum.reshape((NX, NY, NZ), order='F')
@@ -306,29 +308,30 @@ Xf = X2d.flatten(order='F')
 Yf = Y2d.flatten(order='F')
 
 
-# for k in range(NZ):
+for k in range(NZ):
 
-#     permX_k = permX_3d[:, :, k].flatten(order='F')
-#     actnum_k = actnum_3d[:, :, k].flatten(order='F')
-
-
-#     mask_ativos = actnum_k == 1
-#     Xf_ativos = Xf[mask_ativos]
-#     Yf_ativos = Yf[mask_ativos]
-#     permX_ativos = permX_k[mask_ativos]
+    permX_k = permX_3d[:, :, k].flatten(order='F')
+    actnum_k = actnum_3d[:, :, k].flatten(order='F')
 
 
-#     plt.figure(figsize=(8, 6))
-#     sc = plt.scatter(Xf_ativos, Yf_ativos, marker='s', c=permX_ativos, cmap=cmap_custom, s=40)
-#     plt.colorbar(sc, label='PermX (mD)')
-#     plt.xlabel('X')
-#     plt.ylabel('Y')
-#     plt.xlim(min_x-1000, max_x+1000)
-#     plt.ylim(min_y-1000, max_y+1000)
-#     plt.title(f'PermX camada k={k} - Blocos ativos')
-#     plt.gca().set_aspect('equal')
-#     plt.grid(alpha=0.2)
-#     plt.show()
+    mask_ativos = actnum_k == 1
+    Xf_ativos = Xf[mask_ativos]
+    Yf_ativos = Yf[mask_ativos]
+    permX_ativos = permX_k[mask_ativos]
+
+
+    plt.figure(figsize=(8, 6))
+    sc = plt.scatter(Xf_ativos, Yf_ativos, marker='s', c=permX_ativos, cmap=cmap_custom, s=40)
+    plt.colorbar(sc, label='PermX (mD)')
+    plt.xlabel('X')
+    plt.ylabel('Y')
+    plt.xlim(min_x-1000, max_x+1000)
+    plt.ylim(min_y-1000, max_y+1000)
+    plt.title(f'PermX camada k={k} - Blocos ativos')
+    plt.gca().set_aspect('equal')
+    plt.grid(alpha=0.2)
+    plt.show()
+    plt.close()
 
 
 permX_media = np.ones((NX, NY))
@@ -342,9 +345,12 @@ for i in range(NX):
                 pX.append(permX_3d[i, j, k])
                 pY.append(permY_3d[i, j, k])
                 pZ.append(permZ_3d[i, j, k])
+                
 
         if pX:
-            #print(i, j)
+            # if i == 0 and j == 39:
+            #     print(f"PermX média em (0, 29): {np.mean(pX)}")
+            #     time.sleep(10) 
             permX_media[i, j] = np.mean(pX)
             permY_media[i, j] = np.mean(pY)
             a = 1
@@ -382,3 +388,37 @@ axes[1].grid(alpha=0.7)
 axes[1].set_axisbelow(True)
 plt.tight_layout()
 plt.show()
+plt.close()
+
+
+for i in range(NX):
+    for j in range(NY):
+        if np.isnan(permX_media[i, j]) and np.isnan(permY_media[i, j]):
+            pass
+        else:
+            print(f"Célula ({i}, {j}) ativa com PermX média = {permX_media[i, j]:.2f} e PermY média = {permY_media[i, j]:.2f}")
+
+
+
+perm_media_bloco = np.nanmean([permX_media, permY_media], axis=0)
+
+fig, ax = plt.subplots(figsize=(8, 6))
+sc = ax.scatter(Xf, Yf, marker='s', c=perm_media_bloco.flatten(order='F'),
+                cmap=cmap_custom, s=40)
+
+plt.colorbar(sc, label='Perm no bloco (mD)')
+plt.xlabel('X')
+plt.ylabel('Y')
+plt.xlim(min_x-1000, max_x+1000)
+plt.ylim(min_y-1000, max_y+1000)
+plt.title('PermXY - Blocos ativos')
+
+ax.set_aspect('equal')
+ax.grid(True, alpha=0.2)
+ax.set_axisbelow(True)
+plt.savefig("perm_media_bloco_final.png", dpi=300)
+plt.tight_layout()
+plt.show()
+plt.close()
+
+
