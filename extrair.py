@@ -150,14 +150,14 @@ def ler_actnum_arquivo(caminho_arquivo):
 array_actnum = ler_actnum_arquivo("UNISIM_I_D_ECLIPSE.data")
 
 
-for i in range(NX):
-    for j in range(NY):
-        for k in range(NZ):
-            idx = i + j*NX + k*NX*NY
-            if array_actnum[idx] == 1:
-                print(f"Ativo ({i}, {j}, {k})")
-            else:
-                print(f"Inativo ({i}, {j}, {k})")
+# for i in range(NX):
+#     for j in range(NY):
+#         for k in range(NZ):
+#             idx = i + j*NX + k*NX*NY
+#             if array_actnum[idx] == 1:
+#                 print(f"Ativo ({i}, {j}, {k})")
+#             else:
+#                 print(f"Inativo ({i}, {j}, {k})")
 
 
 x, y, z = coords_array[:, 0], coords_array[:, 1], coords_array[:, 2]
