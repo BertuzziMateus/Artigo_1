@@ -137,7 +137,7 @@ X, Y = np.meshgrid(x, y)
 
 
 # Permeabilidade base e interna
-k_out = 0.000000000001*md_to_m2
+k_out = np.nan
 k_in = 500*md_to_m2  # m²
 k_in_high = 1000 * md_to_m2  # m² (convertido de mD)
 

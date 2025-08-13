@@ -262,37 +262,37 @@ permY_flat = permY_3d.flatten(order='F')[ativos]
 permZ_flat = permZ_3d.flatten(order='F')[ativos]
 
 # --- Plot com 3 subplots ---
-fig = plt.figure(figsize=(15, 5))
+# fig = plt.figure(figsize=(15, 5))
 
-# PermX
-ax1 = fig.add_subplot(131, projection='3d')
-sc1 = ax1.scatter(Xf, Yf, Zf, c=permX_flat, cmap=cmap_custom, s=5)
-ax1.set_title("PermX")
-ax1.set_xlabel("X")
-ax1.set_ylabel("Y")
-ax1.set_zlabel("Z")
-fig.colorbar(sc1, ax=ax1, shrink=0.5, label="mD")
+# # PermX
+# ax1 = fig.add_subplot(131, projection='3d')
+# sc1 = ax1.scatter(Xf, Yf, Zf, marker='s',c=permX_flat, cmap=cmap_custom, s=10)
+# ax1.set_title("PermX")
+# ax1.set_xlabel("X")
+# ax1.set_ylabel("Y")
+# ax1.set_zlabel("Z")
+# fig.colorbar(sc1, ax=ax1, shrink=0.5, label="mD")
 
-# PermY
-ax2 = fig.add_subplot(132, projection='3d')
-sc2 = ax2.scatter(Xf, Yf, Zf, c=permY_flat, cmap=cmap_custom, s=5)
-ax2.set_title("PermY")
-ax2.set_xlabel("X")
-ax2.set_ylabel("Y")
-ax2.set_zlabel("Z")
-fig.colorbar(sc2, ax=ax2, shrink=0.5, label="mD")
+# # PermY
+# ax2 = fig.add_subplot(132, projection='3d')
+# sc2 = ax2.scatter(Xf, Yf, Zf,marker='s', c=permY_flat, cmap=cmap_custom, s=10)
+# ax2.set_title("PermY")
+# ax2.set_xlabel("X")
+# ax2.set_ylabel("Y")
+# ax2.set_zlabel("Z")
+# fig.colorbar(sc2, ax=ax2, shrink=0.5, label="mD")
 
-# PermZ
-ax3 = fig.add_subplot(133, projection='3d')
-sc3 = ax3.scatter(Xf, Yf, Zf, c=permZ_flat, cmap=cmap_custom, s=5)
-ax3.set_title("PermZ")
-ax3.set_xlabel("X")
-ax3.set_ylabel("Y")
-ax3.set_zlabel("Z")
-fig.colorbar(sc3, ax=ax3, shrink=0.5, label="mD")
+# # PermZ
+# ax3 = fig.add_subplot(133, projection='3d')
+# sc3 = ax3.scatter(Xf, Yf, Zf, marker='s',c=permZ_flat, cmap=cmap_custom, s=10)
+# ax3.set_title("PermZ")
+# ax3.set_xlabel("X")
+# ax3.set_ylabel("Y")
+# ax3.set_zlabel("Z")
+# fig.colorbar(sc3, ax=ax3, shrink=0.5, label="mD")
 
-plt.tight_layout()
-plt.show()
+# plt.tight_layout()
+# plt.show()
 
 # Remodelar arrays para 3D
 actnum_3d = array_actnum.reshape((NX, NY, NZ), order='F')
@@ -362,9 +362,11 @@ axes[0].set_title('PermX Média')
 axes[0].set_xlabel('X')
 axes[0].set_ylabel('Y')
 axes[0].set_aspect('equal')
-fig.colorbar(pc1, ax=axes[1], label='mD')
-plt.xlim(min_x-1000, max_x+1000)
-plt.ylim(min_y-1000, max_y+1000)
+fig.colorbar(pc1, ax=axes[0], label='mD')
+axes[0].set_xlim(min_x-1000, max_x+1000)
+axes[0].set_ylim(min_y-1000, max_y+1000)
+axes[0].grid(alpha=0.7)
+axes[0].set_axisbelow(True)
 plt.tight_layout()
 
 pc2 = axes[1].pcolormesh(x_vet, y_vet, permY_media.T,
@@ -374,7 +376,9 @@ axes[1].set_xlabel('X')
 axes[1].set_ylabel('Y')
 axes[1].set_aspect('equal')
 fig.colorbar(pc2, ax=axes[1], label='mD')
-plt.xlim(min_x-1000, max_x+1000)
-plt.ylim(min_y-1000, max_y+1000)
+axes[1].set_xlim(min_x-1000, max_x+1000)
+axes[1].set_ylim(min_y-1000, max_y+1000)
+axes[1].grid(alpha=0.7)
+axes[1].set_axisbelow(True)
 plt.tight_layout()
 plt.show()
