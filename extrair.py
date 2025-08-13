@@ -203,7 +203,7 @@ ax.scatter(X_ativos, Y_ativos, Z_ativos, s=2, c='black')
 ax.set_xlabel("X")
 ax.set_ylabel("Y")
 ax.set_zlabel("Z")
-plt.show()
+# plt.show()
 plt.close()
 
 # Remodela ACTNUM e permeabilidades para 3D (NX, NY, NZ)
@@ -293,7 +293,7 @@ ax3.set_zlabel("Z")
 fig.colorbar(sc3, ax=ax3, shrink=0.5, label="mD")
 
 plt.tight_layout()
-plt.show()
+# plt.show()
 plt.close()
 
 # Remodelar arrays para 3D
@@ -330,7 +330,7 @@ for k in range(NZ):
     plt.title(f'PermX camada k={k} - Blocos ativos')
     plt.gca().set_aspect('equal')
     plt.grid(alpha=0.2)
-    plt.show()
+    # plt.show()
     plt.close()
 
 
@@ -387,7 +387,7 @@ axes[1].set_ylim(min_y-1000, max_y+1000)
 axes[1].grid(alpha=0.7)
 axes[1].set_axisbelow(True)
 plt.tight_layout()
-plt.show()
+# plt.show()
 plt.close()
 
 
@@ -402,23 +402,82 @@ for i in range(NX):
 
 perm_media_bloco = np.nanmean([permX_media, permY_media], axis=0)
 
-fig, ax = plt.subplots(figsize=(8, 6))
+fig, ax = plt.subplots(figsize=(16, 9),dpi=150)
 sc = ax.scatter(Xf, Yf, marker='s', c=perm_media_bloco.flatten(order='F'),
                 cmap=cmap_custom, s=40)
 
 plt.colorbar(sc, label='Perm no bloco (mD)')
 plt.xlabel('X')
 plt.ylabel('Y')
-plt.xlim(min_x-1000, max_x+1000)
-plt.ylim(min_y-1000, max_y+1000)
 plt.title('PermXY - Blocos ativos')
+plt.xlim(350000, 360000 )
+plt.ylim(7.513e6, 7.520e6)
 
-ax.set_aspect('equal')
+ax.set_aspect('equal',adjustable='box')
 ax.grid(True, alpha=0.2)
 ax.set_axisbelow(True)
 plt.savefig("perm_media_bloco_final.png", dpi=300)
-plt.tight_layout()
 plt.show()
 plt.close()
 
 
+fig, ax = plt.subplots(figsize=(16, 9), dpi=150)
+
+# Fundo com mapa de cores para facilitar a visualização
+fundo = ax.contourf(x_vet, y_vet, perm_media_bloco.T,
+                    levels=50,  # mais níveis para suavizar
+                    cmap='viridis',  # colormap perceptualmente uniforme
+                    alpha=0.8)
+
+# Apenas as curvas de nível por cima
+contornos = ax.contour(x_vet, y_vet, perm_media_bloco.T,
+                       levels=10,  # quantidade de níveis principais
+                       colors='black',
+                       linewidths=0.7,
+                       antialiased=True)
+
+# Adiciona rótulos nas curvas
+ax.clabel(contornos, inline=True, fontsize=5, fmt="%.1f", colors='black')
+
+# Barra de cores
+cbar = fig.colorbar(fundo, ax=ax, orientation='vertical', shrink=0.8)
+cbar.set_label('PermXY média', fontsize=10)
+
+# Configurações do gráfico
+ax.set_title('Contorno da PermXY média', fontsize=14, fontweight='bold')
+ax.set_xlabel('X', fontsize=12)
+ax.set_ylabel('Y', fontsize=12)
+ax.set_aspect('equal', adjustable='box')
+ax.grid(alpha=0.3)
+ax.set_axisbelow(True)
+
+# Limites
+ax.set_xlim(min_x - 1000, max_x + 1000)
+ax.set_ylim(min_y - 1000, max_y + 1000)
+
+plt.tight_layout()
+plt.show()
+
+
+import numpy as np
+from scipy.interpolate import RegularGridInterpolator
+import matplotlib.pyplot as plt
+
+# Supondo que você já tenha as matrizes:
+# x_vet, y_vet = vetores 1D das coordenadas
+# perm_media_bloco = matriz 2D de permeabilidade
+
+# Criar a função f(x, y)
+f_perm = RegularGridInterpolator((x_vet, y_vet), perm_media_bloco.T)
+
+
+Zi = f_perm((X_ativos, Y_ativos))
+
+# Plot
+plt.figure(figsize=(10,6))
+plt.pcolormesh(X_ativos, Y_ativos, Zi, shading='auto', cmap='jet')
+plt.colorbar(label='Perm (mD)')
+plt.xlabel("X")
+plt.ylabel("Y")
+plt.title("Função f(x,y) - Perm")
+plt.show()
