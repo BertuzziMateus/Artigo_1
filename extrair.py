@@ -344,7 +344,7 @@ for i in range(NX):
                 pZ.append(permZ_3d[i, j, k])
 
         if pX:
-            print(i, j)
+            #print(i, j)
             permX_media[i, j] = np.mean(pX)
             permY_media[i, j] = np.mean(pY)
             a = 1
