@@ -204,6 +204,7 @@ ax.set_xlabel("X")
 ax.set_ylabel("Y")
 ax.set_zlabel("Z")
 plt.show()
+plt.close()
 
 # Remodela ACTNUM e permeabilidades para 3D (NX, NY, NZ)
 actnum_3d = array_actnum.reshape((NX, NY, NZ), order='F')
@@ -293,6 +294,7 @@ fig.colorbar(sc3, ax=ax3, shrink=0.5, label="mD")
 
 plt.tight_layout()
 plt.show()
+plt.close()
 
 # Remodelar arrays para 3D
 actnum_3d = array_actnum.reshape((NX, NY, NZ), order='F')
@@ -306,29 +308,30 @@ Xf = X2d.flatten(order='F')
 Yf = Y2d.flatten(order='F')
 
 
-# for k in range(NZ):
+for k in range(NZ):
 
-#     permX_k = permX_3d[:, :, k].flatten(order='F')
-#     actnum_k = actnum_3d[:, :, k].flatten(order='F')
-
-
-#     mask_ativos = actnum_k == 1
-#     Xf_ativos = Xf[mask_ativos]
-#     Yf_ativos = Yf[mask_ativos]
-#     permX_ativos = permX_k[mask_ativos]
+    permX_k = permX_3d[:, :, k].flatten(order='F')
+    actnum_k = actnum_3d[:, :, k].flatten(order='F')
 
 
-#     plt.figure(figsize=(8, 6))
-#     sc = plt.scatter(Xf_ativos, Yf_ativos, marker='s', c=permX_ativos, cmap=cmap_custom, s=40)
-#     plt.colorbar(sc, label='PermX (mD)')
-#     plt.xlabel('X')
-#     plt.ylabel('Y')
-#     plt.xlim(min_x-1000, max_x+1000)
-#     plt.ylim(min_y-1000, max_y+1000)
-#     plt.title(f'PermX camada k={k} - Blocos ativos')
-#     plt.gca().set_aspect('equal')
-#     plt.grid(alpha=0.2)
-#     plt.show()
+    mask_ativos = actnum_k == 1
+    Xf_ativos = Xf[mask_ativos]
+    Yf_ativos = Yf[mask_ativos]
+    permX_ativos = permX_k[mask_ativos]
+
+
+    plt.figure(figsize=(8, 6))
+    sc = plt.scatter(Xf_ativos, Yf_ativos, marker='s', c=permX_ativos, cmap=cmap_custom, s=40)
+    plt.colorbar(sc, label='PermX (mD)')
+    plt.xlabel('X')
+    plt.ylabel('Y')
+    plt.xlim(min_x-1000, max_x+1000)
+    plt.ylim(min_y-1000, max_y+1000)
+    plt.title(f'PermX camada k={k} - Blocos ativos')
+    plt.gca().set_aspect('equal')
+    plt.grid(alpha=0.2)
+    plt.show()
+    plt.close()
 
 
 permX_media = np.ones((NX, NY))
@@ -385,6 +388,7 @@ axes[1].grid(alpha=0.7)
 axes[1].set_axisbelow(True)
 plt.tight_layout()
 plt.show()
+plt.close()
 
 
 for i in range(NX):
@@ -415,3 +419,6 @@ ax.set_axisbelow(True)
 plt.savefig("perm_media_bloco_final.png", dpi=300)
 plt.tight_layout()
 plt.show()
+plt.close()
+
+
