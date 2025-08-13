@@ -261,49 +261,49 @@ permX_flat = permX_3d.flatten(order='F')[ativos]
 permY_flat = permY_3d.flatten(order='F')[ativos]
 permZ_flat = permZ_3d.flatten(order='F')[ativos]
 
-# # --- Plot com 3 subplots ---
-# fig = plt.figure(figsize=(15, 5))
+# --- Plot com 3 subplots ---
+fig = plt.figure(figsize=(15, 5))
 
-# # PermX
-# ax1 = fig.add_subplot(131, projection='3d')
-# sc1 = ax1.scatter(Xf, Yf, Zf, c=permX_flat, cmap=cmap_custom, s=5)
-# ax1.set_title("PermX")
-# ax1.set_xlabel("X")
-# ax1.set_ylabel("Y")
-# ax1.set_zlabel("Z")
-# fig.colorbar(sc1, ax=ax1, shrink=0.5, label="mD")
+# PermX
+ax1 = fig.add_subplot(131, projection='3d')
+sc1 = ax1.scatter(Xf, Yf, Zf, c=permX_flat, cmap=cmap_custom, s=5)
+ax1.set_title("PermX")
+ax1.set_xlabel("X")
+ax1.set_ylabel("Y")
+ax1.set_zlabel("Z")
+fig.colorbar(sc1, ax=ax1, shrink=0.5, label="mD")
 
-# # PermY
-# ax2 = fig.add_subplot(132, projection='3d')
-# sc2 = ax2.scatter(Xf, Yf, Zf, c=permY_flat, cmap=cmap_custom, s=5)
-# ax2.set_title("PermY")
-# ax2.set_xlabel("X")
-# ax2.set_ylabel("Y")
-# ax2.set_zlabel("Z")
-# fig.colorbar(sc2, ax=ax2, shrink=0.5, label="mD")
+# PermY
+ax2 = fig.add_subplot(132, projection='3d')
+sc2 = ax2.scatter(Xf, Yf, Zf, c=permY_flat, cmap=cmap_custom, s=5)
+ax2.set_title("PermY")
+ax2.set_xlabel("X")
+ax2.set_ylabel("Y")
+ax2.set_zlabel("Z")
+fig.colorbar(sc2, ax=ax2, shrink=0.5, label="mD")
 
-# # PermZ
-# ax3 = fig.add_subplot(133, projection='3d')
-# sc3 = ax3.scatter(Xf, Yf, Zf, c=permZ_flat, cmap=cmap_custom, s=5)
-# ax3.set_title("PermZ")
-# ax3.set_xlabel("X")
-# ax3.set_ylabel("Y")
-# ax3.set_zlabel("Z")
-# fig.colorbar(sc3, ax=ax3, shrink=0.5, label="mD")
+# PermZ
+ax3 = fig.add_subplot(133, projection='3d')
+sc3 = ax3.scatter(Xf, Yf, Zf, c=permZ_flat, cmap=cmap_custom, s=5)
+ax3.set_title("PermZ")
+ax3.set_xlabel("X")
+ax3.set_ylabel("Y")
+ax3.set_zlabel("Z")
+fig.colorbar(sc3, ax=ax3, shrink=0.5, label="mD")
 
-# plt.tight_layout()
-# plt.show()
+plt.tight_layout()
+plt.show()
 
-# # Remodelar arrays para 3D
-# actnum_3d = array_actnum.reshape((NX, NY, NZ), order='F')
-# permX_3d = np.array(permx).reshape((NX, NY, NZ), order='F')
+# Remodelar arrays para 3D
+actnum_3d = array_actnum.reshape((NX, NY, NZ), order='F')
+permX_3d = np.array(permx).reshape((NX, NY, NZ), order='F')
 
-# # Coordenadas
-# x_vet = np.linspace(min_x, max_x, NX)
-# y_vet = np.linspace(min_y, max_y, NY)
-# X2d, Y2d = np.meshgrid(x_vet, y_vet, indexing='ij')
-# Xf = X2d.flatten(order='F')
-# Yf = Y2d.flatten(order='F')
+# Coordenadas
+x_vet = np.linspace(min_x, max_x, NX)
+y_vet = np.linspace(min_y, max_y, NY)
+X2d, Y2d = np.meshgrid(x_vet, y_vet, indexing='ij')
+Xf = X2d.flatten(order='F')
+Yf = Y2d.flatten(order='F')
 
 
 # for k in range(NZ):
@@ -331,46 +331,50 @@ permZ_flat = permZ_3d.flatten(order='F')[ativos]
 #     plt.show()
 
 
-# print(a)
+permX_media = np.ones((NX, NY))
+permY_media = np.ones((NX, NY))
 
-
-
-
-mapa_copia = np.copy(permX_3d)
-
-
-
-
-# Agora cada célula (i, j, k) tem seu valor
 for i in range(NX):
     for j in range(NY):
-        b = [[],[],[]]
+        pX, pY, pZ = [], [], []  # listas para acumular valores
         for k in range(NZ):
-            cont_z = 0
             if actnum_3d[i, j, k] == 1:
-                print(i, j, k)
+                pX.append(permX_3d[i, j, k])
+                pY.append(permY_3d[i, j, k])
+                pZ.append(permZ_3d[i, j, k])
 
-                b[0].append(permX_3d[i, j, k])
-                b[1].append(permY_3d[i, j, k])
-                b[2].append(permZ_3d[i, j, k])
-                print(b)
-                time.sleep(0.1)
-
-
-
-            
-
-            else:
-                print('Inativo')
-        print(b)
-        time.sleep(0.1)
-        b_x_med = np.mean(b[0])
+        if pX:
+            print(i, j)
+            permX_media[i, j] = np.mean(pX)
+            permY_media[i, j] = np.mean(pY)
+            a = 1
+        else:
+            permX_media[i, j] = np.nan
+            permY_media[i, j] = np.nan
 
 
+fig, axes = plt.subplots(1, 2, figsize=(14, 6))
 
 
+pc1 = axes[0].pcolormesh(x_vet, y_vet, permX_media.T,
+                         cmap=cmap_custom, shading='auto')
+axes[0].set_title('PermX Média')
+axes[0].set_xlabel('X')
+axes[0].set_ylabel('Y')
+axes[0].set_aspect('equal')
+fig.colorbar(pc1, ax=axes[1], label='mD')
+plt.xlim(min_x-1000, max_x+1000)
+plt.ylim(min_y-1000, max_y+1000)
+plt.tight_layout()
 
-
-    
-                
-
+pc2 = axes[1].pcolormesh(x_vet, y_vet, permY_media.T,
+                         cmap=cmap_custom, shading='auto')
+axes[1].set_title('PermY Média')
+axes[1].set_xlabel('X')
+axes[1].set_ylabel('Y')
+axes[1].set_aspect('equal')
+fig.colorbar(pc2, ax=axes[1], label='mD')
+plt.xlim(min_x-1000, max_x+1000)
+plt.ylim(min_y-1000, max_y+1000)
+plt.tight_layout()
+plt.show()
