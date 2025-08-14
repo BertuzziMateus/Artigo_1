@@ -417,7 +417,7 @@ ax.set_aspect('equal',adjustable='box')
 ax.grid(True, alpha=0.2)
 ax.set_axisbelow(True)
 plt.savefig("perm_media_bloco_final.png", dpi=300)
-plt.show()
+#plt.show()
 plt.close()
 
 
@@ -456,28 +456,41 @@ ax.set_xlim(min_x - 1000, max_x + 1000)
 ax.set_ylim(min_y - 1000, max_y + 1000)
 
 plt.tight_layout()
+#plt.show()
+plt.close()
+
+from scipy.interpolate import Rbf
+
+# Máscara de pontos ativos no plano XY (onde há pelo menos um k ativo)
+mask_validos = ~np.isnan(perm_media_bloco)
+
+# Coordenadas e valores ativos
+X_valid = Xf[mask_validos.flatten(order='F')]
+Y_valid = Yf[mask_validos.flatten(order='F')]
+Z_valid = perm_media_bloco.flatten(order='F')[mask_validos.flatten(order='F')]
+
+# Criar função RBF
+rbf = Rbf(X_valid, Y_valid, Z_valid, function='cubic', smooth=0)
+
+# Array de saída preenchido só nas células ativas
+perm_media_rbf = np.full_like(perm_media_bloco, np.nan, dtype=float)
+
+# Interpolação apenas para os ativos
+valores_interp = rbf(X_valid, Y_valid)
+
+# Recoloca nos mesmos lugares
+perm_media_rbf[mask_validos] = valores_interp
+
+# Plot preservando inativos
+fig, ax = plt.subplots(figsize=(10, 8), dpi=150)
+pc = ax.pcolormesh(x_vet, y_vet, perm_media_rbf.T, cmap=cmap_custom, shading='auto')
+ax.set_title('Perm Média Interpolada (RBF) - Apenas Ativos')
+ax.set_aspect('equal')
+fig.colorbar(pc, ax=ax, label='mD')
+ax.set_xlim(min_x - 1000, max_x + 1000)
+ax.set_ylim(min_y - 1000, max_y + 1000)
+ax.grid(alpha=0.3)
+ax.set_axisbelow(True)
 plt.show()
 
 
-import numpy as np
-from scipy.interpolate import RegularGridInterpolator
-import matplotlib.pyplot as plt
-
-# Supondo que você já tenha as matrizes:
-# x_vet, y_vet = vetores 1D das coordenadas
-# perm_media_bloco = matriz 2D de permeabilidade
-
-# Criar a função f(x, y)
-f_perm = RegularGridInterpolator((x_vet, y_vet), perm_media_bloco.T)
-
-
-Zi = f_perm((X_ativos, Y_ativos))
-
-# Plot
-plt.figure(figsize=(10,6))
-plt.pcolormesh(X_ativos, Y_ativos, Zi, shading='auto', cmap='jet')
-plt.colorbar(label='Perm (mD)')
-plt.xlabel("X")
-plt.ylabel("Y")
-plt.title("Função f(x,y) - Perm")
-plt.show()
